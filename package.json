@@ -1,0 +1,79 @@
+{
+  "name": "dotwo-compress",
+  "version": "0.1.6",
+  "description": "Conversor y normalizador de video para K2/XDCAM y H.264.",
+  "author": "Domingo Moreno / DoTwo",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dotwobot-dev/dotwo-compress.git"
+  },
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "node server.mjs",
+    "electron": "electron .",
+    "check": "node --check server.mjs && node --check electron/main.cjs && node --check electron/preload.cjs && node --check public/app.js",
+    "fetch:ffmpeg": "bash scripts/fetch_ffmpeg_macos.sh",
+    "pack": "electron-builder --dir",
+    "pack:mac-arm64": "electron-builder --dir --arm64 --config.directories.output=dist-arm64",
+    "pack:mac-intel": "electron-builder --dir --x64 --config.directories.output=dist-intel",
+    "pack:mac-legacy": "electron-builder --dir --x64 --config.electronVersion=26.6.10 --config.directories.output=dist-legacy --config.mac.minimumSystemVersion=10.13.0",
+    "zip:mac-arm64": "electron-builder --arm64 --config.directories.output=dist-arm64",
+    "zip:mac-intel": "electron-builder --x64 --config.directories.output=dist-intel",
+    "zip:mac-legacy": "electron-builder --x64 --config.electronVersion=26.6.10 --config.directories.output=dist-legacy --config.mac.minimumSystemVersion=10.13.0",
+    "dmg:mac-arm64": "electron-builder --arm64 --mac dmg --config.directories.output=dist-arm64",
+    "dmg:mac-intel": "electron-builder --x64 --mac dmg --config.directories.output=dist-intel",
+    "dmg:mac-legacy": "electron-builder --x64 --mac dmg --config.electronVersion=26.6.10 --config.directories.output=dist-legacy --config.mac.minimumSystemVersion=10.13.0",
+    "pkg:mac-arm64": "electron-builder --arm64 --mac pkg --config.directories.output=dist-arm64",
+    "pkg:mac-intel": "electron-builder --x64 --mac pkg --config.directories.output=dist-intel",
+    "pkg:mac-legacy": "electron-builder --x64 --mac pkg --config.electronVersion=26.6.10 --config.directories.output=dist-legacy --config.mac.minimumSystemVersion=10.13.0",
+    "verify:mac-artifact": "bash scripts/verify_macos_artifact.sh",
+    "dist": "electron-builder"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "build": {
+    "appId": "com.dotwo.compress",
+    "productName": "DoTwo Compress",
+    "files": [
+      "electron/**/*",
+      "public/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "scripts",
+        "to": "scripts"
+      },
+      {
+        "from": "config",
+        "to": "config"
+      },
+      {
+        "from": "vendor/ffmpeg",
+        "to": "bin"
+      }
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.video",
+      "identity": null,
+      "icon": "build/icon.icns",
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.inherit.plist",
+      "minimumSystemVersion": "10.15.0",
+      "target": [
+        "zip"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^31.7.7",
+    "electron-builder": "^26.8.1"
+  }
+}

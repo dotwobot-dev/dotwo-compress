@@ -1,0 +1,17 @@
+DoTwo Compress
+Copyright 2026 Domingo Moreno / DoTwo
+
+Original concept and project direction: Domingo Moreno / DoTwo.
+
+This project was created to provide a practical local video conversion
+workflow for audiovisual labs, with K2/XDCAM and H.264 export profiles,
+inspection, trimming, and queue-based processing.
+
+Initial implementation and tooling were developed with OpenClaw/Bender
+assistance.
+
+This product includes third-party open source software. See
+THIRD_PARTY_NOTICES.md for dependency notices.
+
+FFmpeg and FFprobe are third-party tools with their own licensing terms.
+They are not licensed under this project's Apache-2.0 license.

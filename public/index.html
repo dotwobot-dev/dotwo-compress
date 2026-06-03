@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DoTwo Compress</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <section class="entry-row">
+          <header class="brand-panel">
+            <img class="brand-logo" src="./assets/brand/dotwo-compress-logo.png" alt="DoTwo Compress">
+            <h1 class="sr-only">DoTwo Compress</h1>
+          </header>
+
+          <form class="tool-panel" id="job-form">
+            <label for="input-path">Ruta del archivo seleccionado</label>
+            <div class="path-row">
+              <input id="input-path" name="inputPath" type="text" autocomplete="off" spellcheck="false" placeholder="/Users/dotwo/Desktop/PROYECTO K2/colasT2.mov">
+              <button type="button" class="secondary-button" id="pick-button">Añadir archivo</button>
+              <button type="button" id="process-k2-button" data-profile="k2" disabled>Procesar K2</button>
+              <button type="button" id="process-h264-button" data-profile="h264" disabled>Procesar H.264</button>
+            </div>
+            <p class="microcopy">Puedes añadir varios clips, revisar cada proxy, marcar IN/OUT y generar una sola salida final.</p>
+          </form>
+        </section>
+
+        <section class="queue-panel" id="queue-panel" hidden>
+          <div class="panel-heading queue-heading">
+            <div>
+              <p class="eyebrow">Cola de clips</p>
+              <h2 id="queue-title">0 clips</h2>
+            </div>
+            <button type="button" class="secondary-button log-toggle" id="clear-queue-button">Limpiar cola</button>
+          </div>
+          <ol class="clip-list" id="clip-list"></ol>
+        </section>
+
+        <section class="progress-panel" id="progress-panel" hidden>
+          <div class="progress-copy">
+            <span id="progress-label">Preparando</span>
+            <strong id="progress-percent">0%</strong>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <p class="probe-summary" id="probe-summary"></p>
+          <ul class="warning-list" id="warning-list" hidden></ul>
+        </section>
+
+        <section class="review-panel" id="review-panel" hidden>
+          <div class="review-video-frame" id="review-video-frame">
+            <video id="review-video" controls playsinline preload="metadata"></video>
+            <div class="review-placeholder" id="review-placeholder">Generando proxy de revisión</div>
+            <div class="trim-controls" id="trim-controls">
+              <div class="trim-readout" id="trim-readout">Selección: archivo completo</div>
+              <div class="trim-buttons">
+                <button type="button" class="secondary-button trim-button" id="mark-in-button" disabled>Marcar IN</button>
+                <button type="button" class="secondary-button trim-button" id="mark-out-button" disabled>Marcar OUT</button>
+                <button type="button" class="secondary-button trim-button" id="clear-trim-button" disabled>Limpiar</button>
+              </div>
+            </div>
+          </div>
+          <aside class="inspector-panel" id="inspector-panel">
+            <div class="inspector-heading">
+              <span class="traffic-light" id="inspector-light" aria-hidden="true"></span>
+              <div>
+                <p class="eyebrow">Inspector</p>
+                <h2 id="inspector-title">Pendiente</h2>
+              </div>
+            </div>
+            <dl class="inspector-grid" id="inspector-grid"></dl>
+            <ul class="inspector-alerts" id="inspector-alerts" hidden></ul>
+          </aside>
+        </section>
+
+        <section class="result-strip" id="result-strip" hidden>
+          <div>
+            <p class="eyebrow">Salida</p>
+            <p class="output-path" id="output-path"></p>
+          </div>
+          <a class="download-button" id="download-link" href="#">Descargar</a>
+        </section>
+
+        <section class="log-panel collapsed" id="log-panel">
+          <div class="panel-heading">
+            <h2>Registro técnico</h2>
+            <div class="panel-heading-actions">
+              <span id="job-status">En espera</span>
+              <button type="button" class="secondary-button log-toggle" id="log-toggle">Ver log</button>
+            </div>
+          </div>
+          <pre id="log-output"></pre>
+        </section>
+      </section>
+    </main>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

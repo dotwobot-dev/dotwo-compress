@@ -1,0 +1,65 @@
+{
+  "name": "Grass Valley K2 - XDCAM EX 1080i50 MOV",
+  "source_references": [
+    "../ok_006_CATEDRAL_PIEZA.mov",
+    "../ok_024_PADEL_PIEZA.mov",
+    "../021_CLUBDEPORTIVO_PIEZA.mov"
+  ],
+  "container": {
+    "format": "mov",
+    "major_brand": "qt  ",
+    "compatible_brands": "qt  "
+  },
+  "stream_order": [
+    "audio",
+    "video",
+    "timecode"
+  ],
+  "video": {
+    "codec": "mpeg2video",
+    "codec_tag_string": "xdvc",
+    "encoder_tag": "XDCAM EX 1080i50 (35 Mbps)",
+    "profile": "Main",
+    "width": 1920,
+    "height": 1080,
+    "sample_aspect_ratio": "1:1",
+    "display_aspect_ratio": "16:9",
+    "pixel_format": "yuv420p",
+    "frame_rate": "25/1",
+    "field_rate": "50i",
+    "field_order": "top_field_first",
+    "ffprobe_field_order_seen_in_references": "tb",
+    "target_video_bitrate": "35M",
+    "maxrate": "35M",
+    "bufsize": "16M",
+    "gop": 12,
+    "b_frames": 2,
+    "color_primaries": "bt709",
+    "color_transfer": "bt709",
+    "color_space": "bt709"
+  },
+  "audio": {
+    "codec": "pcm_s16le",
+    "codec_tag_string": "lpcm",
+    "sample_rate": 48000,
+    "channels": 2,
+    "bits_per_sample": 16,
+    "layout_policy": "stereo"
+  },
+  "timecode": {
+    "enabled": true,
+    "codec_tag_string": "tmcd",
+    "default_start": "00:00:00:00"
+  },
+  "filename_policy": {
+    "suffix": "_VALIDADO",
+    "extension": ".mov",
+    "allowed_pattern": "A-Z, 0-9 and underscore only",
+    "spaces_allowed": false,
+    "special_characters_allowed": false
+  },
+  "notes": [
+    "PIEZA_TURISMO_NEW.mov is accepted only as H.264 MOV with PCM, but it is not valid as the final operational profile because it does not behave correctly across the server channels.",
+    "Use the XDCAM references above as the technical truth for validation."
+  ]
+}
