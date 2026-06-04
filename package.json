@@ -1,6 +1,6 @@
 {
   "name": "dotwo-compress",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Conversor y normalizador de video para K2/XDCAM y H.264.",
   "author": "Domingo Moreno / DoTwo",
   "license": "Apache-2.0",

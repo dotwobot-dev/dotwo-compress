@@ -6,7 +6,17 @@ Nombre de producto: **DoTwo Compress**.
 
 La app mantiene el perfil tecnico K2/XDCAM como salida broadcast principal y añade H.264 como salida de normalizacion. La identidad visual sigue la linea de DoTwo Teleprompter, con icono D2C, gorra azul y barra verde.
 
-## Beta operativa 0.1.6
+## Beta operativa 0.1.7
+
+Estado: beta tecnica en preparacion para empaquetado. Mantiene la base validada de `0.1.6` y añade protecciones de tamano/espacio, bloqueo de cola durante operaciones, favicon, captura en README y endurecimiento del servidor prototipo.
+
+Manifiesto:
+
+```text
+docs/MANIFIESTO_BETA_0_1_7.md
+```
+
+## Beta validada 0.1.6
 
 Estado: beta operativa en pruebas de campo. Codificacion K2 y exportacion confirmadas en macOS 10.13, con ingesta positiva en Grass Valley.
 
@@ -162,9 +172,31 @@ Si el archivo cargado no es 1920x1080, la app avisa de que se escalara a 1080i e
 
 El inspector avisa tambien de FPS fuera del entorno PAL 25/50, posible frame rate variable, codecs que pueden ralentizar conversion, fuentes sin comprimir o muy pesadas, bitrates altos, archivos grandes y audio ausente o fuera de 48 kHz/estereo.
 
+Limites operativos iniciales para evitar desbordes en equipos de laboratorio:
+
+- maximo por archivo de entrada: `25 GB`;
+- maximo acumulado de cola: `60 GB`;
+- espacio libre minimo despues de copiar/guardar: `5 GB`.
+
+Estos limites son configurables por entorno para pruebas tecnicas:
+
+```bash
+DOTWO_MAX_INPUT_GB=40 DOTWO_MAX_QUEUE_GB=100 DOTWO_MIN_FREE_GB=10 npm run electron
+```
+
+En build distribuida por Finder se usaran los valores por defecto salvo que se lance la app desde un entorno gestionado.
+
 El roadmap de cola multiarchivo y montaje minimo queda documentado en `docs/ROADMAP_EDICION_BASICA.md`.
 
 En montajes multiarchivo, H.264 concatena segmentos normalizados por copia. K2 re-encodea la salida final desde segmentos ya normalizados para preservar validacion `xdvc`, `25/1`, orden audio/video y pista `tmcd`.
+
+## Arquitectura actual
+
+Producto principal: app Electron local.
+
+La estrategia inmediata es aprovechar la capacidad de cada equipo de laboratorio y cerrar un flujo instalable correcto en macOS. El modo `server.mjs` se conserva como prototipo de desarrollo y como posible base futura si la Universidad de Malaga facilita VPS, servidor interno o capacidad de proceso centralizada.
+
+No es prioridad convertir la app en servicio ahora. La posible evolucion a servicio interno tipo SaaS queda aplazada hasta disponer de infraestructura y requisitos claros.
 
 ## Documentos de continuidad
 
@@ -174,6 +206,7 @@ Para retomar el proyecto desde otra maquina:
 docs/RETOMAR_PROYECTO.md
 docs/INFORME_TECNICO_APP.md
 docs/HOJA_DE_RUTA.md
+docs/MANIFIESTO_BETA_0_1_7.md
 docs/MANIFIESTO_BETA_0_1_6.md
 ```
 
@@ -184,3 +217,5 @@ docs/MANIFIESTO_BETA_0_1_6.md
 - Validar Apple Silicon, Intel moderna e Intel legacy con usuarios reales.
 - Esperar respuesta de informatica UMA sobre Apple Developer Program institucional.
 - Mejorar instalacion para laboratorios: firma/notarizacion, DMG/PKG y diagnostico inicial.
+- Mantener `server.mjs` aparcado como prototipo para futura conversion centralizada si hay infraestructura UMA.
+- Ajustar limites de tamano tras medir archivos reales de estudiantes en laboratorio.

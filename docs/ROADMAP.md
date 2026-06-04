@@ -17,3 +17,10 @@ Distribution roadmap:
 - Signed app bundle.
 - Apple notarization.
 - Signed ZIP, DMG, or PKG release.
+
+Architecture note:
+
+- Electron remains the primary product for now, using each lab host for local
+  processing.
+- The local server prototype is parked as a future path for an internal SaaS
+  model if university-hosted processing capacity becomes available.

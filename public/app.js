@@ -298,9 +298,10 @@ function statusLabel(status) {
 function renderQueue(queue) {
   queueState = queue || { clips: [], activeSessionId: null };
   const clips = queueState.clips || [];
+  const queueLocked = clips.some(clip => lockedSessionStates.has(clip.status));
   queuePanel.hidden = clips.length === 0;
   queueTitle.textContent = `${clips.length} clip${clips.length === 1 ? '' : 's'}`;
-  clearQueueButton.disabled = clips.length === 0 || clips.some(clip => lockedSessionStates.has(clip.status));
+  clearQueueButton.disabled = clips.length === 0 || queueLocked;
 
   clipList.replaceChildren(...clips.map((clip, index) => {
     const item = document.createElement('li');
@@ -330,9 +331,9 @@ function renderQueue(queue) {
     const actions = document.createElement('div');
     actions.className = 'clip-actions';
     [
-      ['up', 'Subir', index === 0],
-      ['down', 'Bajar', index === clips.length - 1],
-      ['remove', 'Quitar', lockedSessionStates.has(clip.status)]
+      ['up', 'Subir', queueLocked || index === 0],
+      ['down', 'Bajar', queueLocked || index === clips.length - 1],
+      ['remove', 'Quitar', queueLocked || lockedSessionStates.has(clip.status)]
     ].forEach(([action, label, disabled]) => {
       const button = document.createElement('button');
       button.type = 'button';

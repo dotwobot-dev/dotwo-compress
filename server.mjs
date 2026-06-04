@@ -1,7 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { extname, join, resolve } from 'node:path';
+import { basename, extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -54,8 +54,15 @@ function parseBody(req) {
 function safePublicPath(urlPath) {
   const requested = urlPath === '/' ? '/index.html' : urlPath;
   const resolved = resolve(publicDir, `.${decodeURIComponent(requested)}`);
-  if (!resolved.startsWith(publicDir)) return null;
+  if (!isPathInside(publicDir, resolved)) return null;
   return resolved;
+}
+
+function isPathInside(basePath, candidatePath) {
+  const resolvedBase = resolve(basePath);
+  const resolvedCandidate = resolve(candidatePath);
+  const rel = relative(resolvedBase, resolvedCandidate);
+  return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));
 }
 
 function contentType(path) {
@@ -81,6 +88,15 @@ function publicJob(job) {
     log: job.log.slice(-24000),
     validationLog: job.validationLog
   };
+}
+
+function isKnownOutputPath(filePath) {
+  const resolvedPath = resolve(filePath);
+  return [...jobs.values()].some(job => (
+    job.status === 'success'
+    && job.outputPath
+    && resolve(job.outputPath) === resolvedPath
+  ));
 }
 
 function appendLog(job, text) {
@@ -239,13 +255,17 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/api/download') {
       const path = resolve(String(url.searchParams.get('path') || ''));
+      if (!isKnownOutputPath(path)) {
+        sendJson(res, 403, { error: 'Descarga no autorizada' });
+        return;
+      }
       if (!path || !existsSync(path) || !statSync(path).isFile()) {
         sendJson(res, 404, { error: 'Archivo no encontrado' });
         return;
       }
       res.writeHead(200, {
         'content-type': 'video/quicktime',
-        'content-disposition': `attachment; filename="${encodeURIComponent(path.split('/').pop() || 'VALIDADO.mov')}"`
+        'content-disposition': `attachment; filename="${encodeURIComponent(basename(path) || 'VALIDADO.mov')}"`
       });
       createReadStream(path).pipe(res);
       return;

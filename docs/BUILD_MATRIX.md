@@ -1,6 +1,6 @@
 # Matriz de builds
 
-El proyecto se distribuye en tres variantes para la beta `0.1.6`.
+El proyecto se distribuye en tres variantes. La beta en preparacion es `0.1.7`; la ultima beta validada en campo es `0.1.6`.
 
 ## 1. Apple Silicon
 
@@ -13,7 +13,7 @@ npm run zip:mac-arm64
 Salida:
 
 ```text
-dist-arm64/DoTwo Compress-0.1.6-arm64-mac.zip
+dist-arm64/DoTwo Compress-0.1.7-arm64-mac.zip
 dist-arm64/mac-arm64/DoTwo Compress.app
 ```
 
@@ -46,7 +46,7 @@ npm run zip:mac-intel
 Salida:
 
 ```text
-dist-intel/DoTwo Compress-0.1.6-mac.zip
+dist-intel/DoTwo Compress-0.1.7-mac.zip
 dist-intel/mac/DoTwo Compress.app
 ```
 
@@ -73,7 +73,7 @@ npm run zip:mac-legacy
 Salida:
 
 ```text
-dist-legacy/DoTwo Compress-0.1.6-mac.zip
+dist-legacy/DoTwo Compress-0.1.7-mac.zip
 dist-legacy/mac/DoTwo Compress.app
 ```
 
@@ -116,17 +116,17 @@ RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
 
 ## Carpeta de entrega
 
-Los ZIPs de beta se recopilan tambien con nombres claros en:
+Los ZIPs de la beta en preparacion se recopilan con nombres claros en:
 
 ```text
-RELEASE_BETA_0_1_6/
+RELEASE_BETA_0_1_7/
 ```
 
 Contenido esperado:
 
 ```text
-DoTwo_Compress_Beta_0.1.6_Apple_Silicon.zip
-DoTwo_Compress_Beta_0.1.6_Intel_moderno.zip
-DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
-README_BETA_0.1.6.md
+DoTwo_Compress_Beta_0.1.7_Apple_Silicon.zip
+DoTwo_Compress_Beta_0.1.7_Intel_moderno.zip
+DoTwo_Compress_Beta_0.1.7_Legacy_10.13_Intel.zip
+README_BETA_0.1.7.md
 ```

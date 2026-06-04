@@ -19,6 +19,7 @@ Fecha: 2026-06-02
   - conversion H.264;
   - guardado/exportacion;
   - ingesta Grass Valley.
+- Registrar tamanos reales de archivos de estudiantes para ajustar limites de seguridad.
 - Probar lotes de varios clips con IN/OUT.
 - Probar entradas problematicas:
   - pendrives lentos;
@@ -100,7 +101,11 @@ Fecha: 2026-06-02
 ## Prioridad 6 - Producto y UX
 
 - Mejorar mensajes pedagogicos del inspector segun feedback de alumnos.
-- Anadir indicador de espacio libre antes de copiar/procesar.
+- Revisar limites operativos iniciales:
+  - `25 GB` por archivo;
+  - `60 GB` acumulados en cola;
+  - `5 GB` libres despues de copiar/guardar.
+- Anadir indicador visible de espacio libre antes de copiar/procesar.
 - Anadir estimacion de tiempo restante si los logs de FFmpeg lo permiten con fiabilidad.
 - Mejorar flujo de errores:
   - boton copiar log;
@@ -123,3 +128,30 @@ Fecha: 2026-06-02
 - Historial de exportaciones.
 - Panel tecnico de auditoria por archivo.
 - Instalador con limpieza de versiones anteriores.
+
+## Linea futura - Servicio centralizado
+
+El modo servidor local queda aparcado como prototipo tecnico, no como prioridad de producto inmediata.
+
+Decision actual:
+
+- Priorizar Electron para que cada host de laboratorio procese con su propia CPU/GPU/almacenamiento local.
+- Priorizar instalador macOS correcto: ZIP beta, luego PKG firmado/notarizado cuando este resuelto Developer ID.
+- Mantener `server.mjs` como base recuperable para una posible evolucion posterior.
+
+Escenario futuro:
+
+- Si la Universidad de Malaga ofrece VPS, servidor local o capacidad de proceso compartida, valorar convertir DoTwo Compress en un servicio interno tipo SaaS.
+- Objetivo del servicio: recibir peticiones de conversion, procesar en paralelo en una maquina mas potente y devolver MOV K2/H.264 a los usuarios.
+- Ese camino exigiria una revision especifica de arquitectura:
+  - cola de trabajos persistente;
+  - subida de archivos grandes;
+  - limites por usuario;
+  - limpieza de temporales;
+  - autenticacion institucional;
+  - auditoria de trabajos;
+  - concurrencia FFmpeg;
+  - almacenamiento compartido;
+  - seguridad de descarga.
+
+Mientras no exista esa capacidad centralizada, el servidor queda como herramienta de desarrollo/prototipo y la app Electron sigue siendo el producto principal.

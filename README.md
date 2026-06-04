@@ -4,6 +4,8 @@ App local para convertir videos de alumnos a un MOV XDCAM EX 1080i50 compatible 
 
 La identidad de producto queda como **DoTwo Compress**, siguiendo la linea visual de DoTwo Teleprompter: azul brillante, detalle de gorra y barra de progreso verde. La cabecera de la app usa el logo horizontal; el icono cuadrado queda reservado para Dock/Finder y builds empaquetadas.
 
+![Captura de DoTwo Compress](docs/assets/readme-screenshot.png)
+
 ## Licencia y atribución
 
 DoTwo Compress se publica bajo Apache-2.0. Puedes usarla, modificarla y crear forks, conservando los avisos de licencia y atribución del proyecto original según `LICENSE` y `NOTICE`.

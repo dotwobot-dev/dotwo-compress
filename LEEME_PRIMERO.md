@@ -1,12 +1,14 @@
 # DoTwo Compress - leer primero
 
-Version consolidada: `0.1.6`
+Version consolidada: `0.1.7`
 
-La beta operativa actual esta en:
+La ultima beta validada en campo esta en:
 
 ```text
 RELEASE_BETA_0_1_6/
 ```
+
+La beta `0.1.7` esta en preparacion con cambios de seguridad operativa y empaquetado.
 
 Para macOS 10.13 usar:
 
@@ -29,6 +31,7 @@ docs/HOJA_DE_RUTA.md
 docs/ADMINISTRACION_REPO.md
 docs/DISTRIBUTION.md
 docs/DISTRIBUCION_MACOS.md
+docs/MANIFIESTO_BETA_0_1_7.md
 docs/MANIFIESTO_BETA_0_1_6.md
 ```
 

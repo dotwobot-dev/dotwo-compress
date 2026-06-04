@@ -27,6 +27,17 @@ const profiles = {
   }
 };
 const diagnosticBuild = "0.1.6-temp-cleanup";
+const lockedSessionStatuses = new Set(["copying", "checking", "proxying", "processing", "validating", "saving"]);
+
+function bytesFromGigabytesEnv(name, fallbackGigabytes) {
+  const value = Number(process.env[name]);
+  const gigabytes = Number.isFinite(value) && value > 0 ? value : fallbackGigabytes;
+  return gigabytes * 1024 * 1024 * 1024;
+}
+
+const maxInputFileBytes = bytesFromGigabytesEnv("DOTWO_MAX_INPUT_GB", 25);
+const maxQueueInputBytes = bytesFromGigabytesEnv("DOTWO_MAX_QUEUE_GB", 60);
+const minFreeAfterCopyBytes = bytesFromGigabytesEnv("DOTWO_MIN_FREE_GB", 5);
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
@@ -409,9 +420,61 @@ function assertInputFile(inputPath) {
   return resolvedInput;
 }
 
+function queuedOriginalBytes() {
+  return clipQueue.reduce((total, session) => total + Number(session.originalSizeBytes || session.totalBytes || 0), 0);
+}
+
+function assertInputSizePolicy(filePath, options = {}) {
+  const stat = fs.statSync(filePath);
+  if (stat.size > maxInputFileBytes) {
+    throw new Error(`Archivo demasiado grande (${formatBytes(stat.size)}). Limite por archivo: ${formatBytes(maxInputFileBytes)}.`);
+  }
+
+  const queuedBytes = options.resetQueue ? 0 : queuedOriginalBytes();
+  if (queuedBytes + stat.size > maxQueueInputBytes) {
+    throw new Error(`Cola demasiado grande (${formatBytes(queuedBytes + stat.size)}). Limite de cola: ${formatBytes(maxQueueInputBytes)}.`);
+  }
+
+  return stat;
+}
+
+function freeBytesForPath(dirPath) {
+  if (typeof fs.statfsSync !== "function") return null;
+  try {
+    const statfs = fs.statfsSync(dirPath);
+    const blockSize = Number(statfs.bsize || 0);
+    const availableBlocks = Number(statfs.bavail || statfs.bfree || 0);
+    if (!Number.isFinite(blockSize) || !Number.isFinite(availableBlocks) || blockSize <= 0) return null;
+    return blockSize * availableBlocks;
+  } catch {
+    return null;
+  }
+}
+
+function assertEnoughFreeSpace(dirPath, copyBytes) {
+  const freeBytes = freeBytesForPath(dirPath);
+  if (freeBytes === null) return;
+
+  const requiredBytes = copyBytes + minFreeAfterCopyBytes;
+  if (freeBytes < requiredBytes) {
+    throw new Error(`Espacio insuficiente en disco. Libre: ${formatBytes(freeBytes)}. Necesario: ${formatBytes(requiredBytes)}.`);
+  }
+}
+
 function assertNoRunningJob() {
   const running = [...jobs.values()].find(job => job.status === "running");
   if (running) throw new Error("Hay un proceso en marcha. Espera a que termine antes de cargar otro archivo.");
+}
+
+function assertNoBusySession() {
+  assertNoRunningJob();
+  const busyClip = clipQueue.find(clip => lockedSessionStatuses.has(clip.status));
+  if (busyClip) {
+    throw new Error("Hay una preparacion o conversion en marcha. Espera a que termine antes de modificar la cola.");
+  }
+  if (montageSession && lockedSessionStatuses.has(montageSession.status)) {
+    throw new Error("Hay un montaje en marcha. Espera a que termine antes de modificar la cola.");
+  }
 }
 
 async function resetStagingRoot() {
@@ -425,7 +488,7 @@ function resetStagingRootSync() {
 }
 
 async function resetQueueState() {
-  assertNoRunningJob();
+  assertNoBusySession();
   await resetStagingRoot();
   clipQueue = [];
   activeSession = null;
@@ -591,6 +654,7 @@ async function copyWithProgress(session, source, destination, status, label) {
   appendSessionLog(session, `${label}\nOrigen: ${source}\nDestino: ${destination}\nTamano: ${formatBytes(stat.size)}\n`);
 
   await fs.promises.mkdir(path.dirname(destination), { recursive: true });
+  assertEnoughFreeSpace(path.dirname(destination), stat.size);
 
   const reader = fs.createReadStream(source, { highWaterMark: 1024 * 1024 });
   reader.on("data", chunk => {
@@ -684,7 +748,7 @@ async function createReviewProxy(session) {
   sendSessionUpdate(session);
 }
 
-function createSession(resolvedInput) {
+function createSession(resolvedInput, originalSizeBytes) {
   const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const sessionDir = path.join(stagingRoot(), id);
   const stagedPath = path.join(sessionDir, `ORIGINAL${path.extname(resolvedInput).toLowerCase()}`);
@@ -692,6 +756,7 @@ function createSession(resolvedInput) {
     id,
     status: "copying",
     originalPath: resolvedInput,
+    originalSizeBytes,
     stagedPath,
     outputPath: null,
     savedPath: null,
@@ -715,8 +780,9 @@ function createSession(resolvedInput) {
 }
 
 async function prepareSession(inputPath, options = {}) {
-  assertNoRunningJob();
+  assertNoBusySession();
   const resolvedInput = assertInputFile(inputPath);
+  const inputStat = assertInputSizePolicy(resolvedInput, options);
 
   if (options.resetQueue) {
     await resetQueueState();
@@ -724,7 +790,7 @@ async function prepareSession(inputPath, options = {}) {
     await resetStagingRoot();
   }
 
-  const session = createSession(resolvedInput);
+  const session = createSession(resolvedInput, inputStat.size);
 
   clipQueue.push(session);
   activeSession = session;
@@ -780,7 +846,7 @@ function selectQueueClip(sessionId) {
 }
 
 async function removeQueueClip(sessionId) {
-  assertNoRunningJob();
+  assertNoBusySession();
   const index = clipQueue.findIndex(clip => clip.id === sessionId);
   if (index === -1) throw new Error("Clip no encontrado");
   const [removed] = clipQueue.splice(index, 1);
@@ -799,6 +865,7 @@ async function removeQueueClip(sessionId) {
 }
 
 function moveQueueClip(sessionId, direction) {
+  assertNoBusySession();
   const index = clipQueue.findIndex(clip => clip.id === sessionId);
   if (index === -1) throw new Error("Clip no encontrado");
   const nextIndex = direction === "up" ? index - 1 : index + 1;
@@ -1060,6 +1127,7 @@ async function startJob(inputPathOrSessionId, requestedProfile = "k2", rawTrim =
   const profileConfig = profiles[profile];
   const session = activeSession && activeSession.id === inputPathOrSessionId ? activeSession : null;
   const resolvedInput = session ? session.stagedPath : assertInputFile(inputPathOrSessionId);
+  if (!session) assertInputSizePolicy(resolvedInput, { resetQueue: true });
   if (session && !["ready", "processed", "saved"].includes(session.status)) {
     throw new Error("El archivo aun no esta listo para procesar");
   }
@@ -1442,6 +1510,10 @@ async function savePreparedOutput(sessionId) {
     ? result.filePath
     : `${result.filePath}.mov`;
 
+  if (path.resolve(destination) === path.resolve(session.outputPath)) {
+    throw new Error("Elige una ruta de guardado distinta al temporal interno de la app");
+  }
+
   try {
     await copyWithProgress(session, session.outputPath, destination, "saving", "Guardando el archivo procesado...");
     session.status = "saved";
@@ -1465,7 +1537,12 @@ ipcMain.handle("app:diagnostics", async () => ({
   ffmpegPath: resolveTool("ffmpeg"),
   ffprobePath: resolveTool("ffprobe"),
   hasBundledFfmpeg: fs.existsSync(resolveTool("ffmpeg")) && path.isAbsolute(resolveTool("ffmpeg")),
-  hasBundledFfprobe: fs.existsSync(resolveTool("ffprobe")) && path.isAbsolute(resolveTool("ffprobe"))
+  hasBundledFfprobe: fs.existsSync(resolveTool("ffprobe")) && path.isAbsolute(resolveTool("ffprobe")),
+  limits: {
+    maxInputFileBytes,
+    maxQueueInputBytes,
+    minFreeAfterCopyBytes
+  }
 }));
 
 ipcMain.handle("file:pick", () => pickLocalFile());
