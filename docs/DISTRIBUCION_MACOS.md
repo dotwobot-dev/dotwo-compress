@@ -1,13 +1,13 @@
 # Distribucion macOS
 
-Fecha: 2026-10-06. Version de entrega: 0.1.8. La carpeta NAS inicial contiene
-app + DMG; el siguiente candidato incorpora PKG para despliegue gestionado.
+Fecha: 2026-10-06. Version de entrega: 0.1.8. La carpeta NAS nueva contiene
+app + DMG + PKG por variante; la inicial app + DMG permanece separada.
 
 ## Firma disponible
 
 La cuenta Apple Developer personal de Domingo Moreno esta activa. Identidad:
 Developer ID Application: Domingo Moreno (MR7VK26RP8). Perfil de Llavero:
-dotwo-notary. Developer ID Installer firma los PKG del siguiente candidato.
+dotwo-notary. Developer ID Installer firma los PKG del candidato nuevo.
 La espera institucional de junio es ahora historica.
 Las claves privadas se conservan en el Llavero, sin exportarlas ni pedir
 contrasenas por chat. Cadena G2 comprobada por firma y verificacion de Apple.
@@ -105,18 +105,20 @@ Grass Valley quedan para campo. La prueba de Teleprompter no valida Compress.
 
 ## NAS y GitHub
 
-Entrega nueva en release_archive/DoTwo_Compress_0.1.8_signed_20261006/, dentro de
-/Volumes/BackUP_MacMini/DoTwo_Compress/. Incluye DMG, ZIP opcional de la app
-aprobada y grapada, manual, instrucciones, IDs, resultados y sumas SHA256.
-Se comparan hashes tras copiar y se conservan releases anteriores.
+Entrega nueva en `release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/`,
+dentro de `/Volumes/BackUP_MacMini/DoTwo_Compress/`. Incluye tres DMG y tres
+PKG, ZIP opcionales de apps aprobadas, manual, instrucciones, IDs, QA arm64
+del candidato exacto y sumas SHA-256. Los 24 archivos pasaron verificacion
+tras copiar. La carpeta anterior `DoTwo_Compress_0.1.8_signed_20261006/`
+permanece intacta.
 
 Backup limpio en repo_backups/: codigo, Git, documentacion y fuentes del manual;
 excluye builds, PDF generado, binarios vendor, node_modules y credenciales.
-Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06. Sin tags ni
-GitHub Releases. Los manifiestos de los DMG existentes registran
-`sourceDirty: true`; el push y el CI posterior no prueban procedencia exacta
-de esos binarios. Conservarlos sin modificar y cerrar esa evidencia antes de
-una publicacion definitiva.
+Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06. Build nuevo
+desde `2f17f36` limpio; el commit `90f8ed0` ajusto QA/entrega despues del
+build y queda diferenciado en `metadata/delivery.json`. Sin tags ni GitHub
+Releases. Los manifiestos de la entrega anterior registran `sourceDirty: true`
+y no prueban procedencia exacta; no confundirlos con el candidato nuevo.
 
 ## Referencias
 

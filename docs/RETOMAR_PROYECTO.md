@@ -73,10 +73,10 @@ Codigo, docs, assets y lockfile se versionan. FFmpeg/FFprobe se preparan
 localmente; no se incluyen en Git publico. Builds, PDF generado, dependencias,
 logs, .DS_Store y credenciales quedan fuera.
 La fuente 0.1.8 se sincronizo con GitHub `main` el 2026-10-06 tras autorizacion
-de Do. No hay tags ni GitHub Releases. Ningun nuevo push, build, firma,
-notarizacion o publicacion se deduce de esa autorizacion: presentar el siguiente
-paso concreto y validarlo con Do. Los DMG actuales tienen `sourceDirty: true`;
-consultar `docs/PROJECT_STATUS.md` y `docs/DISTRIBUCION_MACOS.md`.
-El siguiente candidato de 0.1.8 exige app, DMG y PKG por variante; el PKG
-instala en `/Applications` y se firma con Developer ID Installer. La carpeta
-NAS anterior no contiene PKG y permanece como entrega historica separada.
+de Do. No hay tags ni GitHub Releases. Cada paso posterior se valida con Do.
+El candidato nuevo `17-56-38` se construyo limpio desde `2f17f36`: app, DMG
+y PKG por variante estan `verified`, con entrega NAS nueva y QA arm64 propia.
+El PKG instala en `/Applications` y se firma con Developer ID Installer.
+La carpeta NAS inicial no contiene PKG y tiene `sourceDirty: true`; permanece
+como historico separado. Consultar `docs/PROJECT_STATUS.md` y
+`docs/DISTRIBUCION_MACOS.md` antes de pruebas de campo o publicacion.

@@ -53,13 +53,14 @@ El codigo, documentacion, scripts, configuracion e interfaz ocupan muy poco comp
 
 ## Politica vigente de entregas
 
-La entrega preparada de `0.1.8` esta en `release/signed/` y en una carpeta nueva
-de `release_archive/` del NAS. Contiene tres DMG firmados y notarizados, ZIP
-opcionales de sus apps, manual y sumas SHA-256. No incluye PKG; un candidato
-posterior lo anade para despliegue gestionado. GitHub sigue sin
-tag ni release de esta version hasta cerrar la sincronizacion y la validacion
-pendiente. Consultar `docs/DISTRIBUCION_MACOS.md`, `docs/BUILD_MATRIX.md` y
-`docs/MANIFIESTO_0_1_8_FIRMADO.md` antes de distribuir.
+La entrega nueva `0.1.8` esta en `release/signed/` y en
+`release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/` del NAS. Contiene
+tres DMG y tres PKG firmados/notarizados, ZIP opcionales, manual, QA arm64
+vinculada al candidato y sumas SHA-256. La entrega inicial app+DMG sin PKG
+permanece en su carpeta anterior. GitHub sigue sin tag ni release hasta cerrar
+pruebas de campo y aprobacion. Consultar `docs/DISTRIBUCION_MACOS.md` y
+`docs/BUILD_MATRIX.md` antes de distribuir. El manifiesto
+`docs/MANIFIESTO_0_1_8_FIRMADO.md` pertenece a la entrega anterior.
 
 Conservar candidatos, evidencias y versiones anteriores. Un manifiesto
 `sourceDirty: true` no acredita que un binario proceda exactamente de un commit

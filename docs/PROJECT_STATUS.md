@@ -6,12 +6,15 @@ Nombre de producto: **DoTwo Compress**.
 
 La app mantiene el perfil tecnico K2/XDCAM como salida broadcast principal y añade H.264 como salida de normalizacion. La identidad visual sigue la linea de DoTwo Teleprompter, con icono D2C, gorra azul y barra verde.
 
-## Entrega firmada 0.1.8 y siguiente candidato
+## Entrega firmada 0.1.8 con DMG y PKG
 
-La carpeta NAS inicial tiene app+DMG, sin PKG. Do autorizo preparar un nuevo
-candidato con PKG por variante para instalacion desatendida en laboratorios.
-El PKG requiere firma Developer ID Installer, notarizacion/ticket y prueba de
-instalacion de campo; no se considera completado por la entrega inicial.
+La entrega nueva del NAS contiene app, DMG y PKG por variante. Candidato
+`release/signed/0.1.8-2026-10-06T17-56-38-719Z/`, build desde `2f17f36`
+con `sourceDirty: false`; las nueve solicitudes Apple estan Accepted y los
+tres manifiestos `verified`. Los PKG llevan Developer ID Installer y ticket,
+declaran arquitectura/macOS minimo e instalan en `/Applications`. La carpeta
+NAS inicial app+DMG, sin PKG y con `sourceDirty: true`, se conserva separada.
+La instalacion PKG desatendida real todavia necesita prueba de campo.
 
 Apps y DMG de las tres variantes firmados con Developer ID de Domingo Moreno,
 Team `MR7VK26RP8`, aceptados por Apple, con tickets adjuntos y Gatekeeper correcto.
@@ -25,13 +28,16 @@ Intel no ejecutable en este host sin Rosetta: pruebas Intel/High Sierra y Grass
 Valley pendientes en laboratorio. No se han tocado instalaciones de trabajo.
 
 Manual A4 de dos paginas con capturas reales y fuentes en `docs/manual/`.
-Entrega: `/Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/`.
-Ver `docs/MANIFIESTO_0_1_8_FIRMADO.md` y `docs/DISTRIBUCION_MACOS.md`.
+Entrega nueva: `/Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/`.
+Incluye QA arm64 aislada de este candidato (13 checks, dos pruebas de limites),
+manual y 24 archivos verificados por SHA-256. Ver su manifiesto y
+`docs/DISTRIBUCION_MACOS.md`; `docs/MANIFIESTO_0_1_8_FIRMADO.md` describe solo
+la entrega anterior y no se ha reescrito.
 Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06; el workflow
 `check.yml` comprueba sintaxis sobre el SHA publicado, no construye ni firma.
-Sin tag ni GitHub Release. Los DMG entregados se construyeron antes del commit
-local, con `sourceDirty: true`: no se les atribuye procedencia exacta del SHA
-publicado. Intel/High Sierra y Grass Valley siguen pendientes para 0.1.8.
+Sin tag ni GitHub Release. El commit de build de la entrega nueva es `2f17f36`;
+`90f8ed0` corresponde al flujo de QA/entrega posterior, no a los binarios.
+Intel/High Sierra, Grass Valley y despliegue PKG real siguen pendientes.
 
 ## Historico beta 0.1.7
 

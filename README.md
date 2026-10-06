@@ -16,10 +16,9 @@ Consulta también `THIRD_PARTY_NOTICES.md` para dependencias como Electron y par
 
 ## Distribución
 
-La entrega NAS inicial `0.1.8` incluye apps y DMG firmados con Developer ID,
-notarizados por Apple y con ticket adjunto. El siguiente candidato añade PKG
-para despliegue gestionado en laboratorios; solo se considera entregable si
-app, DMG y PKG quedan verificados. Apple Silicon e Intel moderno requieren
+La entrega NAS nueva `0.1.8` incluye app, DMG y PKG por variante, firmados,
+notarizados y con tickets; el PKG permite despliegue gestionado en laboratorios.
+La entrega NAS inicial app+DMG se conserva aparte. Apple Silicon e Intel moderno requieren
 macOS 12+; la variante Intel legacy conserva macOS 10.13+. Las antiguas betas
 ZIP sin firmar se mantienen como historico.
 

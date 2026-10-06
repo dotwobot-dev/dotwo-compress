@@ -2,10 +2,10 @@
 
 Fecha: 2026-10-06. Entrega firmada: 0.1.8.
 
-Esta matriz describe la entrega NAS inicial app+DMG. El siguiente candidato
-anade PKG por variante, con instalacion gestionada en `/Applications`, firma
-Developer ID Installer y notarizacion propia. Hasta que sus manifiestos sean
-`verified`, no atribuir PKG a la entrega inicial.
+La entrega NAS nueva anade PKG por variante, con instalacion gestionada en
+`/Applications`, firma Developer ID Installer y notarizacion propia. Los tres
+manifiestos del candidato `17-56-38` estan `verified`. La entrega NAS inicial
+app+DMG sigue separada y no contiene PKG.
 
 | Variante | Electron | Arquitectura | Minimo app | FFmpeg/FFprobe | Estado |
 | --- | --- | --- | --- | --- | --- |
