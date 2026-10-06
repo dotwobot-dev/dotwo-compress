@@ -4,14 +4,19 @@ const os = require('node:os');
 const assert = require('node:assert/strict');
 const { createRequire } = require('node:module');
 const { run } = require('./macos-signing.cjs');
+const { treeHash } = require('./release-mac-signed.cjs');
 const dependencyRoot = process.env.DOTWO_TEST_NODE_MODULES;
 if (!dependencyRoot) throw new Error('Indica DOTWO_TEST_NODE_MODULES con playwright instalado.');
 const { _electron } = createRequire(path.join(dependencyRoot, 'package.json'))('playwright');
 const root = path.resolve(__dirname, '..');
 const appPath = path.resolve(process.argv[2]);
 const variant = process.argv[3] || 'modern-arm64';
-const out = path.join(root, 'output/qa', variant);
+const out = path.resolve(process.env.DOTWO_QA_OUTPUT_DIR || path.join(root, 'output/qa', variant));
+if (fs.existsSync(out) && fs.readdirSync(out).length) throw new Error(`QA ya existente: ${out}`);
 fs.mkdirSync(out, { recursive: true });
+const candidateVariant = path.dirname(path.dirname(appPath));
+const manifest = JSON.parse(fs.readFileSync(path.join(candidateVariant, 'manifest.json')));
+if (manifest.variant !== variant || manifest.status !== 'verified' || manifest.sourceDirty) throw new Error('Candidato QA no verificado o variante incorrecta.');
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'compress-qa-'));
 const resources = path.join(appPath, 'Contents/Resources');
 const arch = variant.includes('arm64') ? 'arm64' : 'x64';
@@ -30,6 +35,7 @@ async function screenshot(page, name) {
   }
 }
 async function main() {
+  assert.equal(await treeHash(appPath), manifest.appTreeHash);
   run(ffmpeg, ['-y','-v','error','-f','lavfi','-i','testsrc2=size=1280x720:rate=25',
     '-f','lavfi','-i','sine=frequency=440:sample_rate=48000','-t','6','-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p','-c:a','aac',path.join(out,'DEMO_HORIZONTAL.mp4')]);
   run(ffmpeg, ['-y','-v','error','-f','lavfi','-i','testsrc2=size=360x640:rate=25',
@@ -109,7 +115,7 @@ async function main() {
     assert.deepEqual(errors,[]);
     await electron.close();
     assert.deepEqual(fs.readdirSync(path.join(profile,'staging')),[]); checks.push('Cierre limpia temporales');
-    fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({ variant, version:'0.1.8',host:run('sw_vers',['-productVersion']).trim(),arch:process.arch,checks,errors,captured,at:new Date().toISOString()},null,2));
+    fs.writeFileSync(path.join(out,'results.json'),JSON.stringify({ variant, version:'0.1.8',sourceCommit:manifest.sourceCommit,candidate:path.basename(path.dirname(candidateVariant)),appTreeHash:manifest.appTreeHash,host:run('sw_vers',['-productVersion']).trim(),arch:process.arch,checks,errors,captured:captured.map(file=>path.basename(file)),at:new Date().toISOString()},null,2));
     console.log(JSON.stringify({ variant,checks },null,2));
   } catch (e) {
     console.error('Electron diagnostic', await electron.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().map(w => ({ title:w.getTitle(),url:w.webContents.getURL(),crashed:w.webContents.isCrashed() }))));
