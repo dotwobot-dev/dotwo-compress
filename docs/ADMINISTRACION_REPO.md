@@ -38,7 +38,7 @@ Resultado: correcto.
 - `artifacts/`: carpeta local opcional para guardar entregables fuera del historial.
 - `.DS_Store`, logs, temporales y reportes generados.
 
-## Peso detectado
+## Peso detectado en el inventario de junio
 
 Principales consumidores de espacio:
 
@@ -51,15 +51,29 @@ Principales consumidores de espacio:
 
 El codigo, documentacion, scripts, configuracion e interfaz ocupan muy poco comparado con los artefactos generados.
 
-## Politica recomendada de releases
+## Politica vigente de entregas
 
-Mantener como entrega activa:
+La entrega preparada de `0.1.8` esta en `release/signed/` y en una carpeta nueva
+de `release_archive/` del NAS. Contiene tres DMG firmados y notarizados, ZIP
+opcionales de sus apps, manual y sumas SHA-256. No incluye PKG. GitHub sigue sin
+tag ni release de esta version hasta cerrar la sincronizacion y la validacion
+pendiente. Consultar `docs/DISTRIBUCION_MACOS.md`, `docs/BUILD_MATRIX.md` y
+`docs/MANIFIESTO_0_1_8_FIRMADO.md` antes de distribuir.
+
+Conservar candidatos, evidencias y versiones anteriores. Un manifiesto
+`sourceDirty: true` no acredita que un binario proceda exactamente de un commit
+posterior, aunque el codigo runtime se haya comparado durante la entrega.
+
+## Politica historica de betas ZIP (junio de 2026)
+
+En junio se recomendaba mantener como beta activa:
 
 ```text
 RELEASE_BETA_0_1_6/
 ```
 
-Conservar de forma archivada, fuera del repositorio de trabajo, las releases antiguas si se necesita trazabilidad historica:
+Se recomendaba conservar de forma archivada, fuera del repositorio de trabajo,
+las releases anteriores para trazabilidad historica:
 
 ```text
 RELEASE_BETA_0_1/
@@ -72,9 +86,9 @@ RELEASE_BETA_0_1_5/
 
 Cada release antigua ya incluye su `README_BETA_...md` y, salvo la `0.1.6`, un aviso `NO_USAR_USAR_...md`. Eso permite archivarlas sin perder contexto.
 
-## Politica recomendada de limpieza local
+## Limpieza local: inventario historico, no orden vigente
 
-Se pueden borrar y regenerar cuando haga falta:
+En junio se identificaron como regenerables estas carpetas de build:
 
 ```text
 dist-arm64/
@@ -84,13 +98,13 @@ dist-hotfix-legacy/
 node_modules/
 ```
 
-Antes de borrar `node_modules/`, confirmar que se puede reinstalar con:
+La nota antigua sugeria reinstalar `node_modules/` con:
 
 ```bash
 npm install
 ```
 
-Antes de generar paquetes nuevos:
+Y preparaba paquetes ZIP sin firma con:
 
 ```bash
 npm run check
@@ -99,9 +113,11 @@ npm run zip:mac-intel
 npm run zip:mac-legacy
 ```
 
-## Tratamiento recomendado
+Estos comandos son el flujo historico de betas, no el de entrega firmada 0.1.8.
 
-1. Hacer un commit inicial solo con fuente, documentacion y binarios necesarios.
+## Tratamiento historico recomendado para las betas ZIP
+
+1. Hacer un commit inicial solo con fuente y documentacion necesaria.
 2. No meter releases ZIP ni carpetas `dist-*` en Git.
 3. Guardar paquetes de beta en una carpeta externa de archivo, por ejemplo:
 
@@ -109,17 +125,21 @@ npm run zip:mac-legacy
 /Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/
 ```
 
-4. En el repo de trabajo, dejar como maximo la release activa si se quiere tenerla a mano, pero ignorada por Git.
-5. Cuando se cierre una nueva beta, crear su carpeta de release, copiar los ZIPs finales y documentarla con un manifiesto.
+4. En el repo de trabajo, dejar como maximo la beta activa si se quiere tenerla a mano, pero ignorada por Git.
+5. Cuando se cerraba una nueva beta, crear su carpeta de release, copiar los ZIPs finales y documentarla con un manifiesto.
 6. Mantener `docs/PROJECT_STATUS.md` como estado vivo del proyecto y `docs/ADMINISTRACION_REPO.md` como norma de administracion.
 
-## Limpieza sugerida para este momento
+## Estimacion historica de limpieza (junio, no ejecutar por rutina)
 
-Liberacion posible sin tocar codigo:
+Liberacion que se estimo entonces sin tocar codigo:
 
 - Borrar `dist-arm64/`, `dist-intel/`, `dist-legacy/` y `dist-hotfix-legacy/`: libera unos `2.6 GB`.
 - Borrar `node_modules/`: libera unos `571 MB`, reinstalable.
 - Archivar fuera del repo las releases `0.1.0` a `0.1.5`: mueve unos `3.58 GB`.
-- Mantener `RELEASE_BETA_0_1_6/` como release operativa actual: unos `601 MB`.
+- Mantener `RELEASE_BETA_0_1_6/` como beta operativa de aquel momento: unos `601 MB`.
 
-No borrar `vendor/ffmpeg/` sin sustituirlo por un mecanismo documentado de descarga/verificacion, porque ahora forma parte de la reproducibilidad de builds.
+No borrar `vendor/ffmpeg/` sin comprobar antes el mecanismo documentado de
+descarga/verificacion: sus binarios locales siguen siendo necesarios para
+reproducir builds y no se versionan en Git publico. Antes de cualquier limpieza
+actual, inventariar rutas exactas y proteger candidatos firmados, evidencias y
+entregas NAS de `0.1.8` y versiones anteriores.
