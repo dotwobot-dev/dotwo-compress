@@ -99,7 +99,11 @@ Se comparan hashes tras copiar y se conservan releases anteriores.
 
 Backup limpio en repo_backups/: codigo, Git, documentacion y fuentes del manual;
 excluye builds, PDF generado, binarios vendor, node_modules y credenciales.
-Solo commits locales: sin push, tags ni releases GitHub.
+Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06. Sin tags ni
+GitHub Releases. Los manifiestos de los DMG existentes registran
+`sourceDirty: true`; el push y el CI posterior no prueban procedencia exacta
+de esos binarios. Conservarlos sin modificar y cerrar esa evidencia antes de
+una publicacion definitiva.
 
 ## Referencias
 

@@ -22,7 +22,11 @@ Valley pendientes en laboratorio. No se han tocado instalaciones de trabajo.
 Manual A4 de dos paginas con capturas reales y fuentes en `docs/manual/`.
 Entrega: `/Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/`.
 Ver `docs/MANIFIESTO_0_1_8_FIRMADO.md` y `docs/DISTRIBUCION_MACOS.md`.
-GitHub queda sin publicar; cambios preparados en commit local.
+Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06; el workflow
+`check.yml` comprueba sintaxis sobre el SHA publicado, no construye ni firma.
+Sin tag ni GitHub Release. Los DMG entregados se construyeron antes del commit
+local, con `sourceDirty: true`: no se les atribuye procedencia exacta del SHA
+publicado. Intel/High Sierra y Grass Valley siguen pendientes para 0.1.8.
 
 ## Historico beta 0.1.7
 

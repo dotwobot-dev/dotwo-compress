@@ -72,5 +72,8 @@ Preservar Bash 3.2 para los scripts legacy.
 Codigo, docs, assets y lockfile se versionan. FFmpeg/FFprobe se preparan
 localmente; no se incluyen en Git publico. Builds, PDF generado, dependencias,
 logs, .DS_Store y credenciales quedan fuera.
-El encargo actual solo prepara commits locales y entrega NAS. No hacer push,
-tags ni releases: la sync la solicitara el usuario a OpenClaw.
+La fuente 0.1.8 se sincronizo con GitHub `main` el 2026-10-06 tras autorizacion
+de Do. No hay tags ni GitHub Releases. Ningun nuevo push, build, firma,
+notarizacion o publicacion se deduce de esa autorizacion: presentar el siguiente
+paso concreto y validarlo con Do. Los DMG actuales tienen `sourceDirty: true`;
+consultar `docs/PROJECT_STATUS.md` y `docs/DISTRIBUCION_MACOS.md`.
