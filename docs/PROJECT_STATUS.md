@@ -9,7 +9,8 @@ La app mantiene el perfil tecnico K2/XDCAM como salida broadcast principal y añ
 ## Entrega firmada 0.1.8 con DMG y PKG
 
 La entrega nueva del NAS contiene app, DMG y PKG por variante. Candidato
-`release/signed/0.1.8-2026-10-06T17-56-38-719Z/`, build desde `2f17f36`
+original `release/signed/0.1.8-2026-10-06T17-56-38-719Z/`, ahora archivado
+en `repo_backups/local-release-work_20261006/`, build desde `2f17f36`
 con `sourceDirty: false`; las nueve solicitudes Apple estan Accepted y los
 tres manifiestos `verified`. Los PKG llevan Developer ID Installer y ticket,
 declaran arquitectura/macOS minimo e instalan en `/Applications`. La carpeta
@@ -38,6 +39,9 @@ Fuente 0.1.8 sincronizada con `main` de GitHub el 2026-10-06; el workflow
 Sin tag ni GitHub Release. El commit de build de la entrega nueva es `2f17f36`;
 `90f8ed0` corresponde al flujo de QA/entrega posterior, no a los binarios.
 Intel/High Sierra, Grass Valley y despliegue PKG real siguen pendientes.
+El historico de entregas vive en el NAS; los candidatos y duplicados locales
+se retiraron tras su copia recuperable y verificacion. Ver
+`docs/ADMINISTRACION_REPO.md` para la norma vigente.
 
 ## Historico beta 0.1.7
 
@@ -110,7 +114,7 @@ RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Intel_moderno.zip
 RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
 ```
 
-Decision historica de junio: betas ZIP sin firmar mientras se consultaba la via institucional. En octubre se utiliza la cuenta personal activa de Domingo Moreno para app y DMG. PKG queda como opcion futura, fuera del entregable actual.
+Decision historica de junio: betas ZIP sin firmar mientras se consultaba la via institucional. En octubre se utiliza la cuenta personal activa de Domingo Moreno para app, DMG y PKG; la frase antigua sobre PKG futuro ya no describe el entregable actual.
 
 ## Resultado de pruebas
 
@@ -249,6 +253,6 @@ docs/MANIFIESTO_BETA_0_1_6.md
 - Medir tiempos de copia local, proxy y procesado en equipos de laboratorio.
 - Validar Apple Silicon, Intel moderna e Intel legacy con usuarios reales.
 - Probar instalacion y ejecucion de 0.1.8 en Intel moderno y High Sierra.
-- Valorar PKG para despliegue gestionado como trabajo separado.
+- Probar el PKG actual en despliegue desatendido real de laboratorio antes de declararlo validado en campo.
 - Mantener `server.mjs` aparcado como prototipo para futura conversion centralizada si hay infraestructura UMA.
 - Ajustar limites de tamano tras medir archivos reales de estudiantes en laboratorio.

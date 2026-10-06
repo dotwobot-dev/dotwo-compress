@@ -26,9 +26,16 @@ MANIFIESTO_0_1_8_FIRMADO.md dentro de docs/.
 Manual editable y capturas reales: docs/manual/.
 Los PDF generados, QA y artefactos quedan fuera de Git.
 
-Entrega NAS:
+Entrega NAS actual (app, DMG y PKG):
 
-    /Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/
+    /Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/
+
+La entrega inicial app+DMG permanece separada en
+`release_archive/DoTwo_Compress_0.1.8_signed_20261006/`. Los candidatos
+locales y QA se archivaron recuperables en
+`repo_backups/local-release-work_20261006/`; ya no estan en `release/signed/`
+ni `output/`. El historico beta ZIP, incluido `RELEASE_BETA_0_1_7/`, esta en
+el NAS. Ver `ADMINISTRACION_REPO.md` antes de acumular o limpiar artefactos.
 
 Backups limpios de codigo y Git:
 

@@ -6,9 +6,9 @@ Este repositorio debe tratarse como la fuente de trabajo de DoTwo Compress. Los 
 
 ## Estado actual
 
-Entrega actual: `0.1.8`, app y DMG firmados. Los tamanos y releases 0.1.0-0.1.6 de este inventario se conservan como historia, no como ubicacion actual.
+Entrega actual: `0.1.8`, app, DMG y PKG firmados. Los tamanos y releases 0.1.0-0.1.6 de este inventario se conservan como historia, no como ubicacion actual.
 
-Candidatos generados en `release/signed/`, PDF/QA en `output/`; todo ignorado por Git. Entrega NAS nueva en `release_archive/DoTwo_Compress_0.1.8_signed_20261006/`. Backups limpios excluyen dependencias, builds, PDF generado y binarios vendor. `.DS_Store` se ignora como metadato normal de macOS, sin limpieza manual recurrente.
+Candidatos generados en `release/signed/`, PDF/QA en `output/`; todo ignorado por Git y temporal tras archivarse. Entrega NAS actual en `release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/`. Backups limpios excluyen dependencias, builds, PDF generado y binarios vendor. `.DS_Store` se ignora como metadato normal de macOS, sin limpieza manual recurrente.
 
 Comprobacion basica validada:
 
@@ -53,18 +53,48 @@ El codigo, documentacion, scripts, configuracion e interfaz ocupan muy poco comp
 
 ## Politica vigente de entregas
 
-La entrega nueva `0.1.8` esta en `release/signed/` y en
+La entrega nueva `0.1.8` esta en
 `release_archive/DoTwo_Compress_0.1.8_signed_pkg_20261006/` del NAS. Contiene
 tres DMG y tres PKG firmados/notarizados, ZIP opcionales, manual, QA arm64
 vinculada al candidato y sumas SHA-256. La entrega inicial app+DMG sin PKG
-permanece en su carpeta anterior. GitHub sigue sin tag ni release hasta cerrar
+permanece en su carpeta anterior. Los candidatos locales se archivaron como
+copias de recuperacion bajo `repo_backups/local-release-work_20261006/` y se
+retiraron del disco de trabajo. GitHub sigue sin tag ni release hasta cerrar
 pruebas de campo y aprobacion. Consultar `docs/DISTRIBUCION_MACOS.md` y
 `docs/BUILD_MATRIX.md` antes de distribuir. El manifiesto
 `docs/MANIFIESTO_0_1_8_FIRMADO.md` pertenece a la entrega anterior.
 
-Conservar candidatos, evidencias y versiones anteriores. Un manifiesto
+Conservar candidatos, evidencias y versiones anteriores en el NAS, sin acumular
+duplicados locales. Un manifiesto
 `sourceDirty: true` no acredita que un binario proceda exactamente de un commit
 posterior, aunque el codigo runtime se haya comparado durante la entrega.
+
+## Historico de entregas y limpieza local: norma vigente
+
+- El NAS `release_archive/` es el archivo principal. Cada version o candidato
+  entregado conserva su propia carpeta, artefactos originales, manifiesto,
+  manual/pruebas aplicables y `SHA256SUMS.txt`. No sobrescribir versiones ni
+  reinterpretar un ZIP antiguo como DMG/PKG. Las betas `0.1.0`-`0.1.7` son
+  historicamente ZIP; `RELEASE_BETA_0_1_7/` ya esta en el NAS. A partir de
+  `0.1.8`, conservar DMG y PKG por variante cuando ambos se produzcan.
+- El T7 puede ser una segunda copia deliberada, no sustituye el NAS ni se
+  sincroniza automaticamente. Git conserva fuente y documentacion, no paquetes.
+- El repo local conserva la fuente `main` mas reciente y las dependencias de
+  trabajo necesarias (`node_modules/`, `vendor/ffmpeg/`), pero no un catalogo
+  de DMG/PKG/ZIP ni duplicados `latest`. `release/signed/` y `output/` son areas
+  de produccion temporales, no el archivo historico.
+- Antes de retirar una version local: inventariar rutas exactas; copiar al NAS
+  los entregables y cualquier candidato/QA unico necesario para recuperacion;
+  verificar hashes sobre el destino (`shasum -a 256 -c SHA256SUMS.txt`) y
+  comprobar que el manifiesto y las pruebas corresponden al candidato. Guardar
+  trabajo intermedio recuperable en `repo_backups/` con sumas y nota de origen.
+  Solo entonces retirar las rutas locales concretas; nunca limpiar todo
+  `release/`, `output/`, dependencias, vendor ni el arbol Git a ciegas.
+- Una nueva version recibe carpeta propia en NAS. `latest` designa la version
+  vigente en la documentacion, no una copia extra local. No limpiar un candidato
+  todavia activo ni publicar tag/release antes de completar sus validaciones.
+  Para rollback, recuperar del NAS la carpeta de la version elegida y verificar
+  sus hashes; las versiones anteriores permanecen intactas.
 
 ## Politica historica de betas ZIP (junio de 2026)
 
