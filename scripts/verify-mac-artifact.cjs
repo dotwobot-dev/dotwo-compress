@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { run, TEAM, verifyApplication } = require('./macos-signing.cjs');
+const { verifyPackage, variants } = require('./release-mac-signed.cjs');
 function verifyApp(appPath) {
   const plist = JSON.parse(run('plutil', ['-convert', 'json', '-o', '-', path.join(appPath,'Contents/Info.plist')], { stdoutOnly:true }));
   const arch = run('lipo',['-archs',path.join(appPath,'Contents/MacOS',plist.CFBundleExecutable)]).trim() === 'arm64' ? 'arm64' : 'x64';
@@ -10,7 +11,13 @@ function verifyApp(appPath) {
 function main() {
   const file = path.resolve(process.argv[2] || '');
   if (file.endsWith('.app')) return verifyApp(file);
-  if (!file.endsWith('.dmg')) throw new Error('Usa app o DMG.');
+  if (file.endsWith('.pkg')) {
+    const variant = Object.keys(variants).find(name => file.endsWith(`-${name}.pkg`));
+    if (!variant) throw new Error('Variante PKG desconocida.');
+    verifyPackage(file, { ...variants[variant], teamId: TEAM }, true);
+    return { pkg: file, variant, teamId: TEAM, ...variants[variant] };
+  }
+  if (!file.endsWith('.dmg')) throw new Error('Usa app, DMG o PKG.');
   run('codesign',['--verify','--strict',file]);
   const details = run('codesign',['--display','--verbose=4',file]);
   if (!details.includes(`TeamIdentifier=${TEAM}`) || !/^Timestamp=/m.test(details)) throw new Error('Equipo o timestamp de DMG incorrectos.');

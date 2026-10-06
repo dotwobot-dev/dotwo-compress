@@ -16,7 +16,12 @@ Consulta también `THIRD_PARTY_NOTICES.md` para dependencias como Electron y par
 
 ## Distribución
 
-La entrega `0.1.8` incluye apps y DMG firmados con Developer ID, notarizados por Apple y con ticket adjunto. Apple Silicon e Intel moderno requieren macOS 12+; la variante Intel legacy conserva macOS 10.13+. Las antiguas betas ZIP sin firmar se mantienen como historico.
+La entrega NAS inicial `0.1.8` incluye apps y DMG firmados con Developer ID,
+notarizados por Apple y con ticket adjunto. El siguiente candidato añade PKG
+para despliegue gestionado en laboratorios; solo se considera entregable si
+app, DMG y PKG quedan verificados. Apple Silicon e Intel moderno requieren
+macOS 12+; la variante Intel legacy conserva macOS 10.13+. Las antiguas betas
+ZIP sin firmar se mantienen como historico.
 
 Los binarios de FFmpeg/FFprobe no se versionan en el Git público. Para preparar una build local:
 

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { parseIdentities } = require('../scripts/macos-signing.cjs');
-const { buildConfig, requireAccepted, notarize, treeHash, validateResume } = require('../scripts/release-mac-signed.cjs');
+const { buildConfig, requireAccepted, notarize, treeHash, validateResume, variants, packageRequirements } = require('../scripts/release-mac-signed.cjs');
 test('Only valid Developer ID identities are parsed', () => {
   const result = parseIdentities(' 1) ' + 'A'.repeat(40) + ' "Developer ID Application: Domingo Moreno (MR7VK26RP8)"\n 2) invalid "fake"');
   assert.equal(result.length, 1); assert.equal(result[0].teamId, 'MR7VK26RP8');
@@ -16,6 +16,14 @@ test('Legacy contains only x64 and preserves runtime/minimum', () => {
   assert.equal(config.mac.hardenedRuntime, true);
   assert.equal(config.extraResources[2].from, 'vendor/ffmpeg/darwin-${arch}');
   assert.equal(config.forceCodeSigning, true);
+});
+test('PKG rejects the wrong architecture and macOS generation at install time', () => {
+  const modern = packageRequirements(variants['modern-arm64']);
+  const legacy = packageRequirements(variants['legacy-x64']);
+  assert.match(modern, /<key>os<\/key><array><string>12\.0<\/string>/);
+  assert.match(modern, /<key>arch<\/key><array><string>arm64<\/string>/);
+  assert.match(legacy, /<key>os<\/key><array><string>10\.13\.0<\/string>/);
+  assert.match(legacy, /<key>arch<\/key><array><string>x86_64<\/string>/);
 });
 test('Apple pending is never accepted', () => {
   assert.throws(() => requireAccepted({ id: 'x', status: 'In Progress' }));

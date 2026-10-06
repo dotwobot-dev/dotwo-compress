@@ -2,6 +2,11 @@
 
 Fecha: 2026-10-06. Entrega firmada: 0.1.8.
 
+Esta matriz describe la entrega NAS inicial app+DMG. El siguiente candidato
+anade PKG por variante, con instalacion gestionada en `/Applications`, firma
+Developer ID Installer y notarizacion propia. Hasta que sus manifiestos sean
+`verified`, no atribuir PKG a la entrega inicial.
+
 | Variante | Electron | Arquitectura | Minimo app | FFmpeg/FFprobe | Estado |
 | --- | --- | --- | --- | --- | --- |
 | modern-arm64 | 43.7.7 | arm64 | macOS 12.0 | 8.1.1, min 12.0 | Firma, Apple, ticket, Gatekeeper y flujo local comprobados |

@@ -1,13 +1,14 @@
 # Distribucion macOS
 
-Fecha: 2026-10-06. Version de entrega: 0.1.8.
+Fecha: 2026-10-06. Version de entrega: 0.1.8. La carpeta NAS inicial contiene
+app + DMG; el siguiente candidato incorpora PKG para despliegue gestionado.
 
 ## Firma disponible
 
 La cuenta Apple Developer personal de Domingo Moreno esta activa. Identidad:
 Developer ID Application: Domingo Moreno (MR7VK26RP8). Perfil de Llavero:
-dotwo-notary. Tambien esta disponible Developer ID Installer; PKG no forma
-parte de esta entrega. La espera institucional de junio es ahora historica.
+dotwo-notary. Developer ID Installer firma los PKG del siguiente candidato.
+La espera institucional de junio es ahora historica.
 Las claves privadas se conservan en el Llavero, sin exportarlas ni pedir
 contrasenas por chat. Cadena G2 comprobada por firma y verificacion de Apple.
 
@@ -49,7 +50,13 @@ automaticamente. No se reutiliza un ticket si cambia el contenido.
 Cada app se envia como ZIP de notarizacion. Solo tras Accepted se adjunta
 el ticket y se crea el DMG desde la app aprobada. El DMG se firma, envia por
 separado, grapa y comprueba. IDs y hashes antes/despues quedan en manifest.json.
-El entregable obligatorio es app + DMG. Ningun PKG bloquea el flujo.
+El entregable nuevo exige app + DMG + PKG por variante. Los PKG se crean desde
+la misma app aprobada mediante `productbuild --component` hacia
+`/Applications`, firmados con Developer ID Installer. El producto declara
+arquitectura y macOS minimo; no ejecuta scripts de instalacion. El PKG se envia
+a Apple por separado, se grapa y se verifica con `pkgutil`, Gatekeeper y
+`stapler`. Un PKG pendiente bloquea el estado `verified` de ese candidato.
+La entrega NAS inicial de app + DMG se conserva sin reinterpretarla como PKG.
 
 ## Verificacion
 
@@ -60,10 +67,16 @@ JIT ni de validacion de bibliotecas. Los originales vendor no se modifican.
 
     npm run verify:mac-artifact -- "/ruta/DoTwo Compress.app"
     npm run verify:mac-artifact -- "/ruta/DoTwo-Compress-0.1.8-modern-arm64.dmg"
+    npm run verify:mac-artifact -- "/ruta/DoTwo-Compress-0.1.8-modern-arm64.pkg"
 
 El DMG exige firma, equipo correcto, Gatekeeper con context:primary-signature,
-ticket valido y verificacion de la app montada en solo lectura. --deep se usa
-como verificacion adicional; no como sustituto de firma explicita.
+ticket valido y verificacion de la app montada en solo lectura. El PKG exige
+firma Installer, timestamp, requisitos de arquitectura/macOS, payload de la
+app y FFmpeg/FFprobe, ticket y Gatekeeper de instalacion. La instalacion
+desatendida real en el laboratorio sigue pendiente: el administrador del
+equipo podra usar `installer -pkg <paquete.pkg> -target /` desde su sistema de
+gestion; este flujo de build no ejecuta `sudo` ni instala el paquete.
+`--deep` se usa como verificacion adicional; no sustituye la firma explicita.
 
 ## Instalacion y manual
 

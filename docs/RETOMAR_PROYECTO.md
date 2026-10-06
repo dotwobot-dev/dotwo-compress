@@ -77,3 +77,6 @@ de Do. No hay tags ni GitHub Releases. Ningun nuevo push, build, firma,
 notarizacion o publicacion se deduce de esa autorizacion: presentar el siguiente
 paso concreto y validarlo con Do. Los DMG actuales tienen `sourceDirty: true`;
 consultar `docs/PROJECT_STATUS.md` y `docs/DISTRIBUCION_MACOS.md`.
+El siguiente candidato de 0.1.8 exige app, DMG y PKG por variante; el PKG
+instala en `/Applications` y se firma con Developer ID Installer. La carpeta
+NAS anterior no contiene PKG y permanece como entrega historica separada.

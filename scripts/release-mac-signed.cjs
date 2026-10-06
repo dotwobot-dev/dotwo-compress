@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
 const { createHash } = require('node:crypto');
 const { run, checkSigning, notaryArgs, walk, verifyApplication, verifyCode } = require('./macos-signing.cjs');
 const info = require('../package.json');
@@ -47,6 +48,40 @@ function buildConfig(name, output, signing) {
 function requireAccepted(entry) {
   if (entry.status !== 'Accepted' || !entry.id) throw new Error(`Apple ${entry.status || 'unknown'}: ${entry.id || 'sin ID'}`);
 }
+function packageRequirements(variant) {
+  const arch = variant.arch === 'x64' ? 'x86_64' : 'arm64';
+  return `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n` +
+    `<plist version="1.0"><dict><key>os</key><array><string>${variant.minimumSystemVersion}</string></array>` +
+    `<key>arch</key><array><string>${arch}</string></array></dict></plist>\n`;
+}
+function verifyPackage(pkgPath, manifest, notarized = false) {
+  const signature = run('pkgutil', ['--check-signature', pkgPath]);
+  if (!signature.includes('signed by a developer certificate issued by Apple for distribution') ||
+      !signature.includes(`Developer ID Installer: Domingo Moreno (${manifest.teamId})`) ||
+      !signature.includes('Signed with a trusted timestamp')) throw new Error('Firma Installer del PKG incorrecta.');
+  const expandedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'compress-pkg-'));
+  try {
+    const expanded = path.join(expandedRoot, 'expanded');
+    run('pkgutil', ['--expand', pkgPath, expanded]);
+    const distribution = fs.readFileSync(path.join(expanded, 'Distribution'), 'utf8');
+    const arch = manifest.arch === 'x64' ? 'x86_64' : 'arm64';
+    if (!distribution.includes(`hostArchitectures="${arch}"`) ||
+        !distribution.includes(`<os-version min="${manifest.minimumSystemVersion}"/>`) ||
+        !distribution.includes('customLocation="/Applications"')) throw new Error('Requisitos o destino PKG incorrectos.');
+  } finally { fs.rmSync(expandedRoot, { recursive: true, force: true }); }
+  const payload = run('pkgutil', ['--payload-files', pkgPath]);
+  for (const file of ['Contents/MacOS/DoTwo Compress',
+    `Contents/Resources/bin/darwin-${manifest.arch}/ffmpeg`,
+    `Contents/Resources/bin/darwin-${manifest.arch}/ffprobe`]) {
+    if (!payload.includes(`./DoTwo Compress.app/${file}`)) throw new Error(`PKG sin ${file}.`);
+  }
+  if (notarized) {
+    const assessment = run('spctl', ['--assess', '--verbose=2', '--type', 'install', pkgPath]);
+    if (!assessment.includes('Notarized Developer ID')) throw new Error('Gatekeeper no reconoce notarizacion PKG.');
+    run('xcrun', ['stapler', 'validate', pkgPath]);
+  }
+}
 async function notarize(file, signing, entries, key, save, execute = run) {
   let entry = entries[key];
   if (!entry) {
@@ -77,13 +112,15 @@ function validateResume(output, manifest, signing) {
   if (!rel || rel === '..' || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) throw new Error('Candidato fuera de release/signed.');
   const variant = variants[manifest.variant];
   if (!variant || manifest.version !== info.version || manifest.teamId !== signing.teamId ||
-    Object.entries(variant).some(([k,v]) => manifest[k] !== v) || !manifest.appTreeHash) throw new Error('Metadatos del candidato no coinciden.');
+    Object.entries(variant).some(([k,v]) => manifest[k] !== v) || !manifest.appTreeHash ||
+    manifest.sourceDirty || manifest.requiredTargets?.join(',') !== 'application,dmg,pkg') throw new Error('Metadatos del candidato no coinciden.');
 }
 async function finishCandidate(output, manifest, signing) {
   const { build, Platform, Arch } = require('electron-builder');
   const save = () => saveManifest(path.join(output, 'manifest.json'), manifest);
   const appPath = path.join(output, manifest.arch === 'arm64' ? 'mac-arm64' : 'mac', 'DoTwo Compress.app');
   const dmgPath = path.join(output, `DoTwo-Compress-${info.version}-${manifest.variant}.dmg`);
+  const pkgPath = path.join(output, `DoTwo-Compress-${info.version}-${manifest.variant}.pkg`);
   try {
     if (await treeHash(appPath) !== manifest.appTreeHash) throw new Error('La app cambio desde la firma/envio.');
     verifyApplication(appPath, manifest.minimumSystemVersion, manifest.arch);
@@ -132,7 +169,31 @@ async function finishCandidate(output, manifest, signing) {
       if (await treeHash(path.join(mount, 'DoTwo Compress.app')) !== manifest.appTreeHash) throw new Error('App dentro de DMG diferente.');
       manifest.mountedDmgVerified = true;
     } finally { run('hdiutil', ['detach', mount]); }
-    manifest.artifacts = [{ file: path.basename(dmgPath), sha256: manifest.dmgSha256 }];
+    if (!manifest.pkgPackaged) {
+      const requirements = path.join(output, 'installer-requirements.plist');
+      fs.writeFileSync(requirements, packageRequirements(manifest));
+      run('productbuild', ['--product', requirements, '--component', appPath, '/Applications',
+        '--sign', signing.installer.name, pkgPath], { timeout: 600000 });
+      verifyPackage(pkgPath, manifest);
+      if (await treeHash(appPath) !== manifest.appTreeHash) throw new Error('El PKG modifico la app aprobada.');
+      manifest.pkgSha256 = await sha256(pkgPath);
+      manifest.pkgPackaged = true;
+      save();
+    }
+    if (await sha256(pkgPath) !== manifest.pkgSha256) throw new Error('PKG modificado desde empaquetado.');
+    verifyPackage(pkgPath, manifest, Boolean(manifest.pkgStapled));
+    if (!manifest.pkgStapled) {
+      await notarize(pkgPath, signing, manifest.notarizations, 'pkg', save);
+      run('xcrun', ['stapler', 'staple', pkgPath]);
+      manifest.pkgSha256 = await sha256(pkgPath);
+      manifest.pkgStapled = true;
+      save();
+    }
+    verifyPackage(pkgPath, manifest, true);
+    manifest.artifacts = [
+      { file: path.basename(dmgPath), sha256: manifest.dmgSha256 },
+      { file: path.basename(pkgPath), sha256: manifest.pkgSha256 }
+    ];
     manifest.status = 'verified';
     manifest.verifiedAt = new Date().toISOString();
     delete manifest.error;
@@ -149,7 +210,7 @@ async function prepare(name, session, signing, prepareOnly) {
   const output = path.join(session, name);
   fs.mkdirSync(output);
   const manifest = { version: info.version, variant: name, ...variants[name], teamId: signing.teamId,
-    requiredTargets: ['application', 'dmg'], createdAt: new Date().toISOString(), status: 'incomplete',
+    requiredTargets: ['application', 'dmg', 'pkg'], createdAt: new Date().toISOString(), status: 'incomplete',
     sourceCommit: run('git', ['rev-parse', 'HEAD'], { cwd: root }).trim(),
     sourceDirty: Boolean(run('git', ['status', '--porcelain'], { cwd: root }).trim()) };
   const save = () => saveManifest(path.join(output, 'manifest.json'), manifest);
@@ -173,6 +234,7 @@ async function main() {
   const prepareOnly = args.includes('--prepare-only');
   const selected = args.includes('--all') ? Object.keys(variants) : args[0] === '--variant' && variants[args[1]] ? [args[1]] : [];
   if (!selected.length) throw new Error('Uso: --all | --variant modern-arm64|modern-x64|legacy-x64 [--prepare-only] | --resume ruta');
+  if (run('git', ['status', '--porcelain'], { cwd: root }).trim()) throw new Error('La release exige arbol Git limpio antes del build.');
   run('npm', ['run', 'check'], { cwd: root, stdio: 'inherit' });
   run('npm', ['test'], { cwd: root, stdio: 'inherit' });
   const session = path.join(root, 'release/signed', `${info.version}-${new Date().toISOString().replace(/[:.]/g, '-')}`);
@@ -180,4 +242,4 @@ async function main() {
   for (const name of selected) await prepare(name, session, signing, prepareOnly);
 }
 if (require.main === module) main().catch(e => { console.error(e.message); process.exitCode = 1; process.on('exit', () => { process.exitCode = 1; }); });
-module.exports = { variants, buildConfig, requireAccepted, notarize, validateResume, sha256, treeHash };
+module.exports = { variants, buildConfig, requireAccepted, notarize, validateResume, sha256, treeHash, packageRequirements, verifyPackage };

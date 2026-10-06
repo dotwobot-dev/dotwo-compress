@@ -55,7 +55,8 @@ El codigo, documentacion, scripts, configuracion e interfaz ocupan muy poco comp
 
 La entrega preparada de `0.1.8` esta en `release/signed/` y en una carpeta nueva
 de `release_archive/` del NAS. Contiene tres DMG firmados y notarizados, ZIP
-opcionales de sus apps, manual y sumas SHA-256. No incluye PKG. GitHub sigue sin
+opcionales de sus apps, manual y sumas SHA-256. No incluye PKG; un candidato
+posterior lo anade para despliegue gestionado. GitHub sigue sin
 tag ni release de esta version hasta cerrar la sincronizacion y la validacion
 pendiente. Consultar `docs/DISTRIBUCION_MACOS.md`, `docs/BUILD_MATRIX.md` y
 `docs/MANIFIESTO_0_1_8_FIRMADO.md` antes de distribuir.

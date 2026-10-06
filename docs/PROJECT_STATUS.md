@@ -6,7 +6,12 @@ Nombre de producto: **DoTwo Compress**.
 
 La app mantiene el perfil tecnico K2/XDCAM como salida broadcast principal y añade H.264 como salida de normalizacion. La identidad visual sigue la linea de DoTwo Teleprompter, con icono D2C, gorra azul y barra verde.
 
-## Entrega firmada 0.1.8
+## Entrega firmada 0.1.8 y siguiente candidato
+
+La carpeta NAS inicial tiene app+DMG, sin PKG. Do autorizo preparar un nuevo
+candidato con PKG por variante para instalacion desatendida en laboratorios.
+El PKG requiere firma Developer ID Installer, notarizacion/ticket y prueba de
+instalacion de campo; no se considera completado por la entrega inicial.
 
 Apps y DMG de las tres variantes firmados con Developer ID de Domingo Moreno,
 Team `MR7VK26RP8`, aceptados por Apple, con tickets adjuntos y Gatekeeper correcto.

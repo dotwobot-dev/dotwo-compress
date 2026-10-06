@@ -17,7 +17,8 @@ async function main() {
   const manifests={};
   for (const variant of ['modern-arm64','modern-x64','legacy-x64']) {
     const m = JSON.parse(fs.readFileSync(path.join(candidate,variant,'manifest.json')));
-    if (m.status!=='verified' || !m.appStapled || !m.dmgStapled || !m.mountedDmgVerified) throw new Error(`Candidato no completo: ${variant}`);
+    if (m.status!=='verified' || !m.appStapled || !m.dmgStapled || !m.pkgStapled || !m.mountedDmgVerified ||
+        m.requiredTargets?.join(',')!=='application,dmg,pkg') throw new Error(`Candidato no completo: ${variant}`);
     manifests[variant]=m;
   }
   fs.mkdirSync(path.join(local,'metadata'),{recursive:true});
@@ -34,6 +35,10 @@ async function main() {
     const dmg = path.join(directory,`DoTwo-Compress-0.1.8-${variant}.dmg`);
     if(await sha256(dmg)!==m.dmgSha256) throw new Error('DMG modificado.');
     fs.copyFileSync(dmg,path.join(local,path.basename(dmg)));
+    const pkg = path.join(directory,`DoTwo-Compress-0.1.8-${variant}.pkg`);
+    if(await sha256(pkg)!==m.pkgSha256) throw new Error('PKG modificado.');
+    require('./release-mac-signed.cjs').verifyPackage(pkg,m,true);
+    fs.copyFileSync(pkg,path.join(local,path.basename(pkg)));
     const zip=path.join(local,`DoTwo-Compress-0.1.8-${variant}.app.zip`);
     run('ditto',['-c','-k','--sequesterRsrc','--keepParent',appPath,zip],{timeout:120000});
     const extracted=fs.mkdtempSync(path.join(os.tmpdir(),'compress-delivery-'));
@@ -44,7 +49,7 @@ async function main() {
       if(await treeHash(app)!==m.appTreeHash) throw new Error('ZIP de app diferente.');
     } finally {fs.rmSync(extracted,{recursive:true,force:true});}
     fs.copyFileSync(path.join(directory,'manifest.json'),path.join(local,'metadata',`${variant}.json`));
-    delivery.variants[variant]={arch:m.arch,electron:m.electronVersion,minimum:m.minimumSystemVersion,appTreeHash:m.appTreeHash,applicationAppleId:m.notarizations.application.id,dmgAppleId:m.notarizations.dmg.id,appleStatus:'Accepted',runtimeSourcesMatchCurrent:true,machOCount:m.machO.length};
+    delivery.variants[variant]={arch:m.arch,electron:m.electronVersion,minimum:m.minimumSystemVersion,appTreeHash:m.appTreeHash,applicationAppleId:m.notarizations.application.id,dmgAppleId:m.notarizations.dmg.id,pkgAppleId:m.notarizations.pkg.id,appleStatus:'Accepted',runtimeSourcesMatchCurrent:true,machOCount:m.machO.length};
   }
   for(const [source,name] of [
     ['output/pdf/DoTwo_Compress_Manual_Rapido_0.1.8.pdf','DoTwo_Compress_Manual_Rapido_0.1.8.pdf'],
