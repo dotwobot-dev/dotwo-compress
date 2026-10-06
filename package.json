@@ -1,6 +1,6 @@
 {
   "name": "dotwo-compress",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Conversor y normalizador de video para K2/XDCAM y H.264.",
   "author": "Domingo Moreno / DoTwo",
   "license": "Apache-2.0",
@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node server.mjs",
     "electron": "electron .",
-    "check": "node --check server.mjs && node --check electron/main.cjs && node --check electron/preload.cjs && node --check public/app.js",
+    "check": "node scripts/check.cjs",
     "fetch:ffmpeg": "bash scripts/fetch_ffmpeg_macos.sh",
     "pack": "electron-builder --dir",
     "pack:mac-arm64": "electron-builder --dir --arm64 --config.directories.output=dist-arm64",
@@ -29,6 +29,10 @@
     "pkg:mac-intel": "electron-builder --x64 --mac pkg --config.directories.output=dist-intel",
     "pkg:mac-legacy": "electron-builder --x64 --mac pkg --config.electronVersion=26.6.10 --config.directories.output=dist-legacy --config.mac.minimumSystemVersion=10.13.0",
     "verify:mac-artifact": "bash scripts/verify_macos_artifact.sh",
+    "check:mac-signing": "node scripts/macos-signing.cjs",
+    "release:mac:signed": "node scripts/release-mac-signed.cjs",
+    "build:dmg-background": "xcrun swift scripts/build-dmg-background.swift",
+    "test": "node --test tests/*.test.cjs",
     "dist": "electron-builder"
   },
   "engines": {
@@ -45,20 +49,49 @@
     "extraResources": [
       {
         "from": "scripts",
-        "to": "scripts"
+        "to": "scripts",
+        "filter": ["*.sh", "!fetch_ffmpeg_macos.sh", "!verify_macos_artifact.sh"]
       },
       {
         "from": "config",
         "to": "config"
       },
       {
-        "from": "vendor/ffmpeg",
-        "to": "bin"
+        "from": "vendor/ffmpeg/darwin-${arch}",
+        "to": "bin/darwin-${arch}",
+        "filter": ["ffmpeg", "ffprobe"]
+      },
+      {
+        "from": "build/licenses",
+        "to": "licenses"
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "LICENSE",
+        "to": "LICENSE"
+      },
+      {
+        "from": "NOTICE",
+        "to": "NOTICE"
       }
     ],
     "directories": {
       "buildResources": "build",
       "output": "dist"
+    },
+    "dmg": {
+      "background": "build/dmg/background.png",
+      "icon": "build/icon.icns",
+      "iconSize": 112,
+      "iconTextSize": 13,
+      "format": "UDZO",
+      "contents": [
+        { "x": 160, "y": 202, "type": "file" },
+        { "x": 480, "y": 202, "type": "link", "path": "/Applications", "name": "Aplicaciones" }
+      ]
     },
     "mac": {
       "category": "public.app-category.video",
@@ -66,14 +99,14 @@
       "icon": "build/icon.icns",
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.inherit.plist",
-      "minimumSystemVersion": "10.15.0",
+      "minimumSystemVersion": "12.0",
       "target": [
         "zip"
       ]
     }
   },
   "devDependencies": {
-    "electron": "^31.7.7",
+    "electron": "43.7.7",
     "electron-builder": "^26.8.1"
   }
 }

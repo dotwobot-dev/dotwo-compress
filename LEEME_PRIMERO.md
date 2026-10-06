@@ -1,19 +1,19 @@
 # DoTwo Compress - leer primero
 
-Version consolidada: `0.1.7`
+Version de entrega: `0.1.8`
 
-La ultima beta validada en campo esta en:
+Entrega firmada y notarizada con DMG, manual y verificaciones:
 
 ```text
-RELEASE_BETA_0_1_6/
+/Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/
 ```
 
-La beta `0.1.7` esta en preparacion con cambios de seguridad operativa y empaquetado.
+Apple Silicon: flujo local probado. Intel y High Sierra: pruebas de campo pendientes. La beta 0.1.6 fue validada historicamente en Grass Valley, no la nueva 0.1.8.
 
 Para macOS 10.13 usar:
 
 ```text
-RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
+DoTwo-Compress-0.1.8-legacy-x64.dmg
 ```
 
 Para retomar el proyecto en otra maquina, leer:
@@ -31,6 +31,7 @@ docs/HOJA_DE_RUTA.md
 docs/ADMINISTRACION_REPO.md
 docs/DISTRIBUTION.md
 docs/DISTRIBUCION_MACOS.md
+docs/MANIFIESTO_0_1_8_FIRMADO.md
 docs/MANIFIESTO_BETA_0_1_7.md
 docs/MANIFIESTO_BETA_0_1_6.md
 ```
@@ -44,7 +45,7 @@ npm run check
 Notas importantes:
 
 - Los temporales internos viven en `~/Library/Application Support/dotwo-compress/staging`.
-- La app no esta firmada ni notarizada todavia.
+- Entrega 0.1.8: Developer ID y notarizacion Apple comprobados; no hay publicacion GitHub en este encargo.
 - Los ZIPs de release deben moverse como ZIP, no copiando la `.app` suelta.
 - `node_modules/` y `dist-*` estan ignorados por Git.
 - Licencia publica: Apache-2.0 + NOTICE.

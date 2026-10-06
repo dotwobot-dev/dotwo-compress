@@ -26,7 +26,7 @@ const profiles = {
     validate: "h264"
   }
 };
-const diagnosticBuild = "0.1.6-temp-cleanup";
+const diagnosticBuild = "0.1.8-signed-dmg";
 const lockedSessionStatuses = new Set(["copying", "checking", "proxying", "processing", "validating", "saving"]);
 
 function bytesFromGigabytesEnv(name, fallbackGigabytes) {
@@ -38,6 +38,14 @@ function bytesFromGigabytesEnv(name, fallbackGigabytes) {
 const maxInputFileBytes = bytesFromGigabytesEnv("DOTWO_MAX_INPUT_GB", 25);
 const maxQueueInputBytes = bytesFromGigabytesEnv("DOTWO_MAX_QUEUE_GB", 60);
 const minFreeAfterCopyBytes = bytesFromGigabytesEnv("DOTWO_MIN_FREE_GB", 5);
+
+// Isolate QA profiles before locking or cleaning any staging directory.
+const requestedUserData = app.commandLine.getSwitchValue("user-data-dir");
+if (requestedUserData) {
+  if (!path.isAbsolute(requestedUserData)) throw new Error("user-data-dir debe ser una ruta absoluta");
+  fs.mkdirSync(requestedUserData, { recursive: true });
+  app.setPath("userData", requestedUserData);
+}
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
@@ -1123,6 +1131,7 @@ async function pickLocalFiles() {
 }
 
 async function startJob(inputPathOrSessionId, requestedProfile = "k2", rawTrim = null) {
+  assertNoBusySession();
   const profile = profiles[requestedProfile] ? requestedProfile : "k2";
   const profileConfig = profiles[profile];
   const session = activeSession && activeSession.id === inputPathOrSessionId ? activeSession : null;
@@ -1236,6 +1245,7 @@ async function startJob(inputPathOrSessionId, requestedProfile = "k2", rawTrim =
         : await validateOutputWithNode(job, job.outputPath);
       appendLog(job, `${validation.text}\n`);
       job.validationLog = validation.text;
+      if (!validation.ok) throw new Error("La salida no cumple el perfil tecnico. Revisa el registro de validacion.");
 
       job.status = "success";
       job.finishedAt = new Date().toISOString();
@@ -1451,6 +1461,7 @@ async function startQueueJob(requestedProfile = "k2", trimMap = {}) {
         : await validateOutputWithNode(job, finalOutput);
       appendLog(job, `${validation.text}\n`);
       job.validationLog = validation.text;
+      if (!validation.ok) throw new Error("El montaje no cumple el perfil tecnico. Revisa el registro de validacion.");
 
       job.status = "success";
       job.finishedAt = new Date().toISOString();

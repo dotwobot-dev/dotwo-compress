@@ -1,210 +1,110 @@
 # Distribucion macOS
 
-Fecha: 2026-06-03
+Fecha: 2026-10-06. Version de entrega: 0.1.8.
 
-## Decision recomendada
+## Firma disponible
 
-Mantener tres niveles de entrega:
+La cuenta Apple Developer personal de Domingo Moreno esta activa. Identidad:
+Developer ID Application: Domingo Moreno (MR7VK26RP8). Perfil de Llavero:
+dotwo-notary. Tambien esta disponible Developer ID Installer; PKG no forma
+parte de esta entrega. La espera institucional de junio es ahora historica.
+Las claves privadas se conservan en el Llavero, sin exportarlas ni pedir
+contrasenas por chat. Cadena G2 comprobada por firma y verificacion de Apple.
 
-1. `zip` para beta tecnica rapida.
-2. `dmg` para instalacion manual por usuarios no gestionados.
-3. `pkg` para laboratorios, despliegue automatizado y administracion centralizada.
+## Variantes
 
-Para los laboratorios, el objetivo debe ser `pkg` firmado y notarizado. Es el formato que mejor encaja con instalacion por Terminal, MDM, Jamf, Munki, Apple Remote Desktop o scripts de administracion.
+| Variante | Arquitectura | Electron | Minimo macOS |
+| --- | --- | --- | --- |
+| modern-arm64 | arm64 | 43.7.7 | 12.0 |
+| modern-x64 | x86_64 | 43.7.7 | 12.0 |
+| legacy-x64 | x86_64 | 26.6.10 | 10.13.0 |
 
-## Decision provisional
+Electron 43 sigue soportado hasta enero de 2027 segun el calendario oficial
+consultado el 2026-10-06. Electron 26 queda congelado para los equipos antiguos.
+Los minimos se comprueban en todos los Mach-O, no solo en Info.plist.
+Cada variante contiene exclusivamente FFmpeg/FFprobe de su arquitectura.
 
-Hasta recibir respuesta del servicio de informatica de la Universidad de Malaga, la beta operativa se mantiene como `zip` sin firmar.
+## Flujo reanudable
 
-Motivo:
+Comandos de preparacion:
 
-- La app sigue en pruebas de campo.
-- Las pruebas inmediatas son carga, tiempos, exportacion e ingesta Grass Valley.
-- No hay certificados Developer ID instalados en este host.
-- La cuenta Apple Developer debe gestionarse preferentemente a nivel institucional, no como cuenta personal.
+    npm ci
+    npm run check
+    npm test
+    npm run check:mac-signing
+    npm run build:dmg-background
+    npm run release:mac:signed -- --all --prepare-only
 
-Si los ZIPs sin firmar provocan demasiada friccion en laboratorio, se revisaran alternativas temporales antes de cerrar el flujo definitivo.
+El ultimo comando crea candidatos nuevos en release/signed/ y firma las apps.
+Permite comprobarlas antes de enviarlas. Para continuar una variante:
 
-## Gestion institucional pendiente
+    npm run release:mac:signed -- --resume /ruta/absoluta/al/candidato/variante
 
-Entidad recomendada para el programa:
+Sin --prepare-only, --all completa el flujo mientras Apple lo permita.
+Cada consulta espera como maximo 45 segundos. Si Apple sigue procesando,
+el candidato conserva su ID y estado incompleto; se reanuda el mismo directorio.
+Una subida con resultado desconocido exige consultar history; no se repite
+automaticamente. No se reutiliza un ticket si cambia el contenido.
 
-```text
-Universidad de Malaga
-```
+Cada app se envia como ZIP de notarizacion. Solo tras Accepted se adjunta
+el ticket y se crea el DMG desde la app aprobada. El DMG se firma, envia por
+separado, grapa y comprueba. IDs y hashes antes/despues quedan en manifest.json.
+El entregable obligatorio es app + DMG. Ningun PKG bloquea el flujo.
 
-No se recomienda registrar la app con Apple ID personal ni como una unidad no confirmada juridicamente, como facultad/departamento, salvo que la UMA o Apple confirmen que esa unidad puede actuar como entidad legal.
+## Verificacion
 
-Pendiente con el servicio de informatica:
+scripts/sign-mac.cjs firma todos los Mach-O y bundles internos antes del bundle
+principal, con hardened runtime y timestamp. allow-jit se aplica solo a Electron
+y sus helpers, incluidos sus bundles .app. FFmpeg/FFprobe no reciben excepciones
+JIT ni de validacion de bibliotecas. Los originales vendor no se modifican.
 
-- Confirmar si la Universidad de Malaga ya dispone de Apple Developer Program institucional.
-- Si existe, solicitar acceso como `Admin` o `Developer`, o que emitan los certificados necesarios.
-- Si no existe, valorar alta institucional y solicitud de exencion de cuota educativa.
-- Confirmar quien custodia certificados, credenciales de notarizacion y renovaciones.
+    npm run verify:mac-artifact -- "/ruta/DoTwo Compress.app"
+    npm run verify:mac-artifact -- "/ruta/DoTwo-Compress-0.1.8-modern-arm64.dmg"
 
-Texto base para consulta:
+El DMG exige firma, equipo correcto, Gatekeeper con context:primary-signature,
+ticket valido y verificacion de la app montada en solo lectura. --deep se usa
+como verificacion adicional; no como sustituto de firma explicita.
 
-```text
-Necesitamos distribuir una aplicacion macOS interna para laboratorios de la Facultad de Ciencias de la Comunicacion. No se publicaria en App Store.
+## Instalacion y manual
 
-Para instalarla correctamente y automatizar despliegues, Apple recomienda firmar con Developer ID y notarizar. ¿La Universidad de Malaga dispone ya de una cuenta Apple Developer Program institucional?
+Abrir el DMG adecuado, arrastrar la app a Aplicaciones, esperar la copia,
+expulsar la imagen y abrir desde Aplicaciones. DMG UDZO/HFS+, icono de Compress,
+enlace a /Applications, flecha e instrucciones en castellano. Fondo 640 x 420
+con representacion Retina. No requiere Homebrew.
 
-En caso afirmativo, necesitariamos acceso como Admin/Developer o que se emitan certificados Developer ID Application y Developer ID Installer para firmar la app y el instalador PKG.
+Manual A4 de dos paginas: fuentes y capturas reales en docs/manual/.
 
-En caso negativo, habria que valorar el alta como organizacion Universidad de Malaga y solicitar la exencion de cuota para institucion educativa acreditada.
-```
+    python3 docs/manual/build_manual.py
 
-## Estado de este host
+Requiere ReportLab y Pillow. El PDF queda en output/pdf/, fuera de Git.
+Ambas paginas se renderizan e inspeccionan y contienen texto seleccionable.
 
-Herramientas disponibles:
+## Pruebas
 
-```bash
-xcrun --find notarytool
-xcrun --find stapler
-xcode-select -p
-```
+Apple Silicon firmado: carga/copia, inspector, proxy/reproduccion, IN/OUT,
+cola/orden/eliminacion, K2, H.264, guardado, log, limite por archivo y limpieza.
+Datos sinteticos y --user-data-dir separado. El harness simula selector y
+dialogo de guardado; el resto usa UI, IPC y ejecutables reales del bundle.
 
-Estado comprobado: Command Line Tools disponibles.
+El host no tiene Rosetta: no ejecuta x64. Firmas, minimos y notarizacion Intel
+comprobados; ejecucion Intel moderna y High Sierra, rendimiento e ingesta
+Grass Valley quedan para campo. La prueba de Teleprompter no valida Compress.
 
-Certificados disponibles:
+## NAS y GitHub
 
-```bash
-security find-identity -v -p codesigning
-```
+Entrega nueva en release_archive/DoTwo_Compress_0.1.8_signed_20261006/, dentro de
+/Volumes/BackUP_MacMini/DoTwo_Compress/. Incluye DMG, ZIP opcional de la app
+aprobada y grapada, manual, instrucciones, IDs, resultados y sumas SHA256.
+Se comparan hashes tras copiar y se conservan releases anteriores.
 
-Estado comprobado: `0 valid identities found`.
+Backup limpio en repo_backups/: codigo, Git, documentacion y fuentes del manual;
+excluye builds, PDF generado, binarios vendor, node_modules y credenciales.
+Solo commits locales: sin push, tags ni releases GitHub.
 
-Conclusion: este host puede preparar y empaquetar builds sin firmar, pero no puede crear una distribucion final firmada/notarizada hasta instalar certificados Developer ID.
+## Referencias
 
-## Certificados necesarios
-
-Para distribucion fuera de Mac App Store:
-
-- `Developer ID Application`: firma la `.app` y sus binarios internos.
-- `Developer ID Installer`: firma el `.pkg`.
-
-El `.pkg` no debe firmarse con el certificado de aplicacion. Apple avisa de que puede parecer valido durante el firmado, pero fallar en destino.
-
-## Notarizacion
-
-Para macOS moderno, la ruta correcta es:
-
-1. Firmar la app con Hardened Runtime.
-2. Crear el contenedor final (`zip`, `dmg` o `pkg`).
-3. Enviar a notarizacion con `notarytool` o mediante `electron-builder`.
-4. Grapar el ticket con `stapler`.
-5. Validar con `spctl`.
-
-La notarizacion es especialmente importante para macOS 10.15 o superior. En macOS 10.13 no se exige igual que en Catalina y posteriores, pero una firma Developer ID correcta sigue reduciendo friccion de Gatekeeper.
-
-## Entitlements
-
-Se han preparado:
-
-```text
-build/entitlements.mac.plist
-build/entitlements.mac.inherit.plist
-```
-
-Son entitlements minimos para Electron con Hardened Runtime. No activan sandbox ni permisos de camara/microfono porque la app no los necesita.
-
-Punto critico: FFmpeg y FFprobe van dentro de la app como binarios ejecutables. Tras firmar/notarizar hay que verificar que tambien quedan firmados correctamente.
-
-## Scripts disponibles
-
-ZIP beta actual:
-
-```bash
-npm run zip:mac-arm64
-npm run zip:mac-intel
-npm run zip:mac-legacy
-```
-
-DMG manual:
-
-```bash
-npm run dmg:mac-arm64
-npm run dmg:mac-intel
-npm run dmg:mac-legacy
-```
-
-PKG laboratorio:
-
-```bash
-npm run pkg:mac-arm64
-npm run pkg:mac-intel
-npm run pkg:mac-legacy
-```
-
-Verificacion de artefacto:
-
-```bash
-npm run verify:mac-artifact -- "dist-legacy/DoTwo Compress-0.1.6.pkg"
-npm run verify:mac-artifact -- "dist-legacy/mac/DoTwo Compress.app"
-```
-
-## Flujo objetivo para laboratorios
-
-1. Instalar certificados Developer ID en el llavero del host de build.
-2. Configurar credenciales de notarizacion mediante `notarytool store-credentials` o variables de entorno seguras.
-3. Generar `pkg:mac-legacy` como primera variante critica para macOS 10.13 Intel.
-4. Validar instalacion local:
-
-```bash
-sudo installer -verbose -pkg "dist-legacy/DoTwo Compress-0.1.6.pkg" -target /
-```
-
-5. Abrir `/Applications/DoTwo Compress.app`.
-6. Ejecutar prueba real:
-   - carga de archivo;
-   - proxy;
-   - exportacion K2;
-   - exportacion H.264;
-   - guardado;
-   - ingesta Grass Valley.
-7. Validar firma:
-
-```bash
-npm run verify:mac-artifact -- "/Applications/DoTwo Compress.app"
-npm run verify:mac-artifact -- "dist-legacy/DoTwo Compress-0.1.6.pkg"
-```
-
-## Criterio de eleccion
-
-ZIP:
-
-- Bueno para beta y traslado rapido.
-- Poco instalable en laboratorio.
-- Puede arrastrar friccion de permisos/cuarentena si se manipula mal.
-
-DMG:
-
-- Bueno para usuarios que instalan manualmente.
-- Presentacion mas familiar.
-- No es ideal para despliegue automatico masivo.
-
-PKG:
-
-- Mejor para laboratorios.
-- Instalable por linea de comandos y herramientas de gestion.
-- Permite futuras tareas de instalacion o limpieza.
-- Requiere certificado `Developer ID Installer` para distribucion final.
-
-## Pendientes concretos
-
-- Esperar respuesta del servicio de informatica de la UMA sobre cuenta Apple Developer institucional.
-- Instalar certificados Developer ID.
-- Decidir nombre del perfil de notarizacion en llavero.
-- Probar si `electron-builder` firma correctamente FFmpeg/FFprobe como `extraResources`.
-- Generar primer `pkg` legacy.
-- Instalar en un equipo de laboratorio con macOS 10.13.
-- Confirmar si hace falta un `postinstall` para limpiar versiones previas o basta con sobrescribir `/Applications/DoTwo Compress.app`.
-
-## Fuentes de referencia
-
-- Apple Developer ID: https://developer.apple.com/support/developer-id/
-- Apple Notarization: https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution
-- Apple PKG signing: https://help.apple.com/xcode/mac/current/en.lproj/deve51ce7c3d.html
-- Electron code signing: https://www.electronjs.org/docs/latest/tutorial/code-signing
-- electron-builder macOS: https://www.electron.build/docs/mac
-- electron-builder PKG: https://www.electron.build/docs/pkg
+- [Electron: calendario](https://releases.electronjs.org/schedule).
+- [Electron: compatibilidad](https://www.electronjs.org/docs/latest/breaking-changes).
+- [electron-builder 26](https://www.electron.build/v26/docs/mac/).
+- [Apple: notarizacion](https://developer.apple.com/documentation/security/notarizing-macos-software-before-distribution).
+- Guia del host: /Users/dotwo/Repos/APPLE_SIGNING_DMG_HANDOFF.md.

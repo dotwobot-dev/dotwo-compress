@@ -1,12 +1,14 @@
 # Administracion del repositorio
 
-Fecha de inventario: 2026-06-03
+Inventario historico: 2026-06-03. Actualizacion operativa: 2026-10-06.
 
 Este repositorio debe tratarse como la fuente de trabajo de DoTwo Compress. Los paquetes generados para entrega no deben formar parte del historial Git normal, porque pesan mucho y se pueden reconstruir desde el codigo, la configuracion y los binarios declarados.
 
 ## Estado actual
 
-Version consolidada: `0.1.6`.
+Entrega actual: `0.1.8`, app y DMG firmados. Los tamanos y releases 0.1.0-0.1.6 de este inventario se conservan como historia, no como ubicacion actual.
+
+Candidatos generados en `release/signed/`, PDF/QA en `output/`; todo ignorado por Git. Entrega NAS nueva en `release_archive/DoTwo_Compress_0.1.8_signed_20261006/`. Backups limpios excluyen dependencias, builds, PDF generado y binarios vendor. `.DS_Store` se ignora como metadato normal de macOS, sin limpieza manual recurrente.
 
 Comprobacion basica validada:
 
@@ -23,7 +25,7 @@ Resultado: correcto.
 - `scripts/`: conversion, analisis, proxy y validacion.
 - `config/`: perfil objetivo K2.
 - `build/`: iconos, marca y recursos de build.
-- `vendor/ffmpeg/`: FFmpeg/FFprobe internos necesarios para builds reproducibles.
+- `vendor/ffmpeg/README.md` y metadatos de descarga: los binarios se preparan localmente y no entran en Git publico.
 - `docs/`: estado, roadmap, manifiestos y guia de continuidad.
 - `tests/`: matriz de pruebas.
 - `package.json` y `package-lock.json`.

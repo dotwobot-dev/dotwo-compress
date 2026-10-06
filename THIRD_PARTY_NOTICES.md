@@ -5,7 +5,7 @@ tools keep their own licenses.
 
 Direct npm dependencies checked for this repository:
 
-- Electron 31.7.7: MIT license.
+- Electron 43.7.7 (modern) and 26.6.10 (frozen legacy): MIT license.
 - electron-builder 26.8.1: MIT license.
 
 ## FFmpeg and FFprobe
@@ -27,6 +27,12 @@ vendor/ffmpeg/darwin-x64/ffmpeg -L
 
 Distribution of builds that include FFmpeg/FFprobe must comply with the
 applicable FFmpeg license terms and source availability requirements.
+
+The 0.1.8 build includes GPL-3.0-or-later text and FFmpeg 8.1.1 source/build
+references in Contents/Resources/licenses/. The original vendor binaries
+retain their recorded hashes; signing only changes bundled copies. The ARM64
+build reports --enable-gpl --enable-version3 and GPL version 3 or later.
+This notice does not relicense FFmpeg under Apache-2.0.
 
 See also:
 

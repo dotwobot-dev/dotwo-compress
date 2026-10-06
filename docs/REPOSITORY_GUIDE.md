@@ -2,9 +2,9 @@
 
 Esta carpeta es la base de repositorio de la app DoTwo Compress.
 
-Git esta inicializado en esta carpeta. Aun no hay commit inicial; conviene hacerlo cuando cerremos la primera tanda de cambios de producto.
+Git tiene historial local y remoto. Los cambios de producto se cierran en commits locales; OpenClaw sincroniza cuando el usuario lo solicita.
 
-Version consolidada actual: `0.1.6`.
+Version de entrega: `0.1.8`. Apps y DMG firmados/notarizados; ver `docs/DISTRIBUCION_MACOS.md`.
 
 Punto de entrada recomendado para retomar el proyecto:
 
@@ -21,7 +21,7 @@ docs/DISTRIBUCION_MACOS.md
 - `build/brand/`: icono y logo de producto.
 - `scripts/`: scripts de conversion K2/H.264, analisis y validacion.
 - `config/`: perfil objetivo del formato Grass Valley K2.
-- `vendor/ffmpeg/`: binarios internos FFmpeg/FFprobe por arquitectura.
+- `vendor/ffmpeg/`: metadatos de binarios FFmpeg/FFprobe; ejecutables locales ignorados por Git.
 - `docs/`: documentacion tecnica y de build.
 - `tests/`: matriz de pruebas reales.
 

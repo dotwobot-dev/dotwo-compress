@@ -1,10 +1,10 @@
 # Hoja de ruta
 
-Fecha: 2026-06-02
+Fecha: 2026-10-06
 
 ## Prioridad 1 - Depuracion de campo
 
-- Mantener beta `0.1.6` como base estable.
+- Validar en campo la entrega firmada `0.1.8`; conservar 0.1.6 como referencia historica K2.
 - Registrar cualquier fallo con:
   - version visible en log;
   - sistema operativo;
@@ -33,15 +33,10 @@ Fecha: 2026-06-02
 
 ## Prioridad 2 - Firma, instalacion y distribucion
 
-- Mantener ZIP sin firmar como formato de beta tecnica hasta recibir respuesta del servicio de informatica de la UMA.
-- Consultar si existe Apple Developer Program institucional de la Universidad de Malaga.
-- Evitar registrar certificados con Apple ID personal salvo decision explicita de la institucion.
-- Preparar DMG para instalacion manual.
-- Preparar PKG como formato objetivo para laboratorios.
-- Instalar certificados Apple Developer:
-  - `Developer ID Application` para firmar `.app` y binarios internos;
-  - `Developer ID Installer` para firmar `.pkg`.
-- Configurar notarizacion con `notarytool`.
+- Completado en 0.1.8: Developer ID personal de Domingo Moreno, notarizacion y DMG en tres variantes.
+- Cuenta/Team actual `MR7VK26RP8`; perfil de Llavero `dotwo-notary`.
+- Mantener flujo reanudable y verificaciones de todos los Mach-O y contenedores.
+- PKG gestionado para laboratorios queda como opcion posterior; no bloquea app + DMG.
 - Comprobar si Gatekeeper cambia el comportamiento en:
   - macOS 10.13;
   - Intel moderno;
@@ -63,7 +58,7 @@ Fecha: 2026-06-02
 
 ## Prioridad 3 - Repositorio definitivo y backups
 
-- Hacer commit inicial limpio en la maquina definitiva.
+- Mantener commits locales revisados antes de solicitar sync GitHub a OpenClaw.
 - Decidir politica de artefactos:
   - versionar solo codigo/docs/vendor;
   - guardar ZIPs de release fuera del repo Git;
@@ -136,7 +131,7 @@ El modo servidor local queda aparcado como prototipo tecnico, no como prioridad 
 Decision actual:
 
 - Priorizar Electron para que cada host de laboratorio procese con su propia CPU/GPU/almacenamiento local.
-- Priorizar instalador macOS correcto: ZIP beta, luego PKG firmado/notarizado cuando este resuelto Developer ID.
+- Distribuir DMG firmados/notarizados; valorar PKG gestionado como fase posterior.
 - Mantener `server.mjs` como base recuperable para una posible evolucion posterior.
 
 Escenario futuro:

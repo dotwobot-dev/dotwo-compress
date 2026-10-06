@@ -1,132 +1,34 @@
 # Matriz de builds
 
-El proyecto se distribuye en tres variantes. La beta en preparacion es `0.1.7`; la ultima beta validada en campo es `0.1.6`.
+Fecha: 2026-10-06. Entrega firmada: 0.1.8.
 
-## 1. Apple Silicon
+| Variante | Electron | Arquitectura | Minimo app | FFmpeg/FFprobe | Estado |
+| --- | --- | --- | --- | --- | --- |
+| modern-arm64 | 43.7.7 | arm64 | macOS 12.0 | 8.1.1, min 12.0 | Firma, Apple, ticket, Gatekeeper y flujo local comprobados |
+| modern-x64 | 43.7.7 | x86_64 | macOS 12.0 | 8.1.1-tessus, min 10.13 | Firma, Apple, ticket y Gatekeeper comprobados; ejecucion Intel pendiente |
+| legacy-x64 | 26.6.10 | x86_64 | macOS 10.13.0 | 8.1.1-tessus, min 10.13 | Firma, Apple, ticket y Gatekeeper comprobados; High Sierra pendiente |
 
-Uso:
+Los minimos se inspeccionan en todos los Mach-O empaquetados, no solo en
+Info.plist. No se incluyen binarios de la otra arquitectura.
 
-```bash
-npm run zip:mac-arm64
-```
+    npm run release:mac:signed -- --all --prepare-only
+    npm run release:mac:signed -- --resume /ruta/al/candidato/modern-arm64
+    npm run release:mac:signed -- --resume /ruta/al/candidato/modern-x64
+    npm run release:mac:signed -- --resume /ruta/al/candidato/legacy-x64
 
-Salida:
+Cada candidato vive en release/signed/ con manifest.json, app y DMG. Se entrega
+en una carpeta nueva del NAS, con hashes comparados. Los ZIP sin firmar 0.1.7
+se conservan como historico; no son la entrega actual.
 
-```text
-dist-arm64/DoTwo Compress-0.1.7-arm64-mac.zip
-dist-arm64/mac-arm64/DoTwo Compress.app
-```
+## Pruebas de campo pendientes
 
-Requisitos:
+- Instalar desde DMG y abrir en Intel moderno y macOS 10.13.
+- Repetir carga desde disco/pendrive, proxy, cola, IN/OUT, K2/H.264 y guardado.
+- Medir copia, proxy, conversion y guardado con archivos reales.
+- Comprobar ingesta, campos, audio, timecode y duracion en Grass Valley K2.
 
-- Mac Apple Silicon con macOS 12 o superior para los binarios FFmpeg/FFprobe actuales.
-- Electron moderno.
-- FFmpeg/FFprobe `darwin-arm64` incluidos en:
+Legacy usa Electron fuera de soporte y debe limitarse a los equipos antiguos
+del laboratorio. La prueba historica de 0.1.6 no sustituye la de 0.1.8.
+Este host Apple Silicon carece de Rosetta y no ejecuta x64.
 
-```text
-vendor/ffmpeg/darwin-arm64/ffmpeg
-vendor/ffmpeg/darwin-arm64/ffprobe
-```
-
-Estado actual:
-
-- Script preparado.
-- Binarios `darwin-arm64` integrados como dependencia interna autocontenida.
-- Conversion de prueba realizada con `darwin-arm64` y validacion tecnica correcta.
-- Si se necesita Apple Silicon en macOS 11, habra que buscar otra build arm64 o compilar FFmpeg/FFprobe con minimo inferior.
-
-## 2. Intel moderna
-
-Uso:
-
-```bash
-npm run zip:mac-intel
-```
-
-Salida:
-
-```text
-dist-intel/DoTwo Compress-0.1.7-mac.zip
-dist-intel/mac/DoTwo Compress.app
-```
-
-Requisitos:
-
-- Mac Intel moderno.
-- Electron moderno.
-- FFmpeg/FFprobe `darwin-x64`.
-
-Estado actual:
-
-- Script preparado.
-- Binarios `darwin-x64` integrados.
-- No es la build recomendada para macOS 10.13.
-
-## 3. Intel legacy macOS 10.13
-
-Uso:
-
-```bash
-npm run zip:mac-legacy
-```
-
-Salida:
-
-```text
-dist-legacy/DoTwo Compress-0.1.7-mac.zip
-dist-legacy/mac/DoTwo Compress.app
-```
-
-Requisitos:
-
-- Mac Intel con macOS 10.13 High Sierra o superior.
-- Electron `26.6.10`.
-- FFmpeg/FFprobe `darwin-x64` compilados con minimo `10.13`.
-
-Estado actual:
-
-- Build generada y probada en macOS 10.13.
-- Usa los mismos binarios `darwin-x64`, verificados con minimo macOS `10.13`.
-- ZIP validado:
-
-```text
-RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
-```
-
-## Reglas de distribucion
-
-- No copiar la `.app` suelta por red o USB si hay problemas de permisos.
-- Distribuir como `.zip` creado con `ditto --keepParent`.
-- Para laboratorio, priorizar `.pkg` cuando el flujo este cerrado.
-- Para instalacion manual fuera de laboratorio, valorar `.dmg`.
-- La beta se genera sin firma Developer ID (`mac.identity: null`) y puede mostrar avisos de Gatekeeper.
-- Ver dependencias binarias y hashes en `docs/BINARY_DEPENDENCIES.md`.
-- Ver plan de firma, notarizacion e instalacion en `docs/DISTRIBUCION_MACOS.md`.
-
-## Checklist de beta
-
-- Abrir la app en el sistema objetivo.
-- Cargar un archivo desde disco local.
-- Cargar un archivo desde pendrive o soporte externo.
-- Confirmar que termina la copia local antes de activar procesado.
-- Confirmar que se genera proxy y se reproduce en el player.
-- Procesar K2 y validar ingesta en Grass Valley.
-- Procesar H.264 y validar reproduccion normal.
-- Probar cola con varios clips y recortes `IN`/`OUT`.
-
-## Carpeta de entrega
-
-Los ZIPs de la beta en preparacion se recopilan con nombres claros en:
-
-```text
-RELEASE_BETA_0_1_7/
-```
-
-Contenido esperado:
-
-```text
-DoTwo_Compress_Beta_0.1.7_Apple_Silicon.zip
-DoTwo_Compress_Beta_0.1.7_Intel_moderno.zip
-DoTwo_Compress_Beta_0.1.7_Legacy_10.13_Intel.zip
-README_BETA_0.1.7.md
-```
+Guia: docs/DISTRIBUCION_MACOS.md. Manual editable: docs/manual/.

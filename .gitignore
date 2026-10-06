@@ -7,6 +7,8 @@ dist-legacy/
 dist-hotfix-legacy/
 RELEASE_BETA_*/
 artifacts/
+release/
+output/
 .playwright-cli/
 logs/
 reports/

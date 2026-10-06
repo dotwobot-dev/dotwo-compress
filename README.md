@@ -16,7 +16,7 @@ Consulta también `THIRD_PARTY_NOTICES.md` para dependencias como Electron y par
 
 ## Distribución
 
-Las builds actuales son ZIPs beta sin firmar ni notarizar. macOS puede mostrar avisos de seguridad al abrir artefactos descargados.
+La entrega `0.1.8` incluye apps y DMG firmados con Developer ID, notarizados por Apple y con ticket adjunto. Apple Silicon e Intel moderno requieren macOS 12+; la variante Intel legacy conserva macOS 10.13+. Las antiguas betas ZIP sin firmar se mantienen como historico.
 
 Los binarios de FFmpeg/FFprobe no se versionan en el Git público. Para preparar una build local:
 
@@ -26,7 +26,7 @@ npm run fetch:ffmpeg
 npm run check
 ```
 
-El siguiente paso previsto para publicación estable es firma con Apple Developer ID, notarización y artefactos firmados. Detalle en [Distribución](docs/DISTRIBUTION.md).
+Flujo firmado reanudable: `npm run release:mac:signed -- --all`, desde el host con el Llavero preparado. Detalle en [Distribución](docs/DISTRIBUTION.md) y [guía macOS](docs/DISTRIBUCION_MACOS.md). Manual en castellano: fuentes y capturas reales en [docs/manual](docs/manual/); el PDF de dos páginas se entrega en el NAS y queda fuera de Git.
 
 Assets base:
 

@@ -13,6 +13,11 @@ if [ ! -e "$ARTIFACT" ]; then
   exit 66
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ "$ARTIFACT" == *.app || "$ARTIFACT" == *.dmg ]]; then
+  exec node "$SCRIPT_DIR/verify-mac-artifact.cjs" "$ARTIFACT"
+fi
+
 case "$ARTIFACT" in
   *.app)
     echo "== codesign =="

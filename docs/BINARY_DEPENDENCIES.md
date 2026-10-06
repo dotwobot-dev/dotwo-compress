@@ -2,6 +2,13 @@
 
 Fecha de recopilacion: 2026-06-01
 
+Verificacion de entrega firmada 0.1.8: 2026-10-06. Los cuatro originales
+siguen coincidiendo con los SHA256 de abajo. Cada build incluye solo su
+arquitectura; se firman las copias dentro del bundle, nunca los originales.
+Todos los deployment targets y dependencias se inspeccionan en el manifiesto.
+Se incluye GPL-3.0-or-later y referencias a fuentes/build scripts en
+`Contents/Resources/licenses/`. La salida `ffmpeg -L` arm64 confirma GPLv3+.
+
 La app empaquetada no depende de Homebrew ni de instalaciones del sistema. Electron llama a los binarios preparados en `vendor/ffmpeg` mediante las rutas internas de la `.app`.
 
 Los binarios de FFmpeg/FFprobe no se versionan en el Git publico. Para prepararlos localmente:

@@ -1,145 +1,76 @@
-# Retomar el proyecto DoTwo Compress
+# Retomar DoTwo Compress
 
-Fecha de consolidacion: 2026-06-02
+Fecha: 2026-10-06. Version de entrega: 0.1.8.
+Repo: /Users/dotwo/Repos/apps/DoTwo_Compress.
+App ID: com.dotwo.compress. Build diagnostico: 0.1.8-signed-dmg.
 
 ## Estado actual
 
-Version consolidada: `0.1.6`
+Apps y DMG firmados, notarizados y con ticket adjunto, en tres variantes.
+Developer ID de Domingo Moreno, Team MR7VK26RP8; perfil de Llavero dotwo-notary.
+La antigua espera institucional de junio queda resuelta para este flujo
+mediante la cuenta personal activa. No exportar claves ni pedir contrasenas.
 
-Build visible en log:
+- Apple Silicon: Electron 43.7.7, macOS 12.0+, flujo funcional local comprobado.
+- Intel moderna: Electron 43.7.7, macOS 12.0+, ejecucion de campo pendiente.
+- Intel legacy: Electron 26.6.10, macOS 10.13.0+, High Sierra pendiente.
 
-```text
-0.1.6-temp-cleanup
-```
+Electron 26 es una variante congelada fuera de soporte. La aceptacion historica
+de beta 0.1.6 en Grass Valley no valida automaticamente esta nueva entrega.
+El host actual no tiene Rosetta; no se han ejecutado binarios x64.
 
-La beta `0.1.6` es la version operativa actual. Mantiene la correccion K2 de macOS 10.13 y anade limpieza reforzada de temporales.
+## Continuidad
 
-Resultado de campo confirmado:
+Leer PROJECT_STATUS.md, BUILD_MATRIX.md, DISTRIBUCION_MACOS.md y
+MANIFIESTO_0_1_8_FIRMADO.md dentro de docs/.
+Manual editable y capturas reales: docs/manual/.
+Los PDF generados, QA y artefactos quedan fuera de Git.
 
-- La app legacy abre y funciona en macOS 10.13.
-- La codificacion K2 funciona.
-- La exportacion funciona.
-- Los MOV K2 generados han sido aceptados por el servidor Grass Valley.
-- No se han necesitado permisos manuales en las pruebas del trabajo.
+Entrega NAS:
 
-## Carpetas clave
+    /Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/
 
-```text
-electron/                 Proceso principal Electron y preload.
-public/                   UI HTML/CSS/JS y assets visibles.
-scripts/                  FFmpeg: proxy, K2, H.264, validacion y utilidades.
-config/                   Perfil tecnico objetivo.
-vendor/ffmpeg/            FFmpeg/FFprobe empaquetados por arquitectura.
-build/                    Icono, logo y recursos de empaquetado.
-docs/                     Documentacion tecnica y operativa.
-tests/                    Matriz de pruebas manuales.
-RELEASE_BETA_0_1_6/       ZIPs operativos actuales.
-```
+Backups limpios de codigo y Git:
 
-## Entrega actual
+    /Volumes/BackUP_MacMini/DoTwo_Compress/repo_backups/
 
-```text
-RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
-RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Intel_moderno.zip
-RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Apple_Silicon.zip
-```
+## Desarrollo y firma
 
-Para los equipos con macOS 10.13 usar:
+    npm ci
+    npm run check
+    npm test
+    npm run check:mac-signing
+    npm run build:dmg-background
+    npm run release:mac:signed -- --all --prepare-only
 
-```text
-DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
-```
+Se pueden probar apps firmadas antes de enviarlas. Para completar/reanudar:
 
-## Comandos basicos
+    npm run release:mac:signed -- --resume /ruta/al/candidato/variante
 
-Instalar dependencias npm si no existe `node_modules`:
+Conservar manifest.json y sus IDs. No repetir subidas con resultado desconocido,
+ni editar una app enviada ni cambiar protecciones de macOS.
+La firma del codigo interno precede al bundle exterior. Los FFmpeg originales
+se mantienen intactos; hashes en BINARY_DEPENDENCIES.md.
 
-```bash
-npm install
-```
+Las pruebas usan --user-data-dir con ruta absoluta separada. Los temporales
+viven en staging bajo ese perfil y se limpian al abrir, limpiar cola y cerrar.
+La instalacion de trabajo no se sustituye para probar.
 
-Comprobar sintaxis:
+## Limites y perfiles
 
-```bash
-npm run check
-```
+Valores iniciales: 25 GiB por archivo, 60 GiB por cola y 5 GiB libres despues
+de copiar/guardar. Ajustables con DOTWO_MAX_INPUT_GB, DOTWO_MAX_QUEUE_GB y
+DOTWO_MIN_FREE_GB para pruebas. No cubren todo el pico de espacio de conversion;
+dejar margen para proxy, segmentos y salida.
 
-Abrir app en desarrollo:
+K2 sigue siendo MOV XDCAM EX 1080i50, MPEG-2 xdvc, audio PCM 48 kHz estereo,
+timecode y nombres ASCII. H.264 normaliza a MOV 1080p con AAC.
+Preservar Bash 3.2 para los scripts legacy.
 
-```bash
-npm run electron
-```
+## Git
 
-Crear builds:
-
-```bash
-npm run pack:mac-legacy
-npm run pack:mac-intel
-npm run pack:mac-arm64
-```
-
-Crear ZIPs con electron-builder:
-
-```bash
-npm run zip:mac-legacy
-npm run zip:mac-intel
-npm run zip:mac-arm64
-```
-
-Si se parchea una app ya generada, actualizar `app.asar`, sincronizar `Resources/scripts`, ajustar `Info.plist` y crear ZIP con:
-
-```bash
-ditto -c -k --keepParent "dist-legacy/mac/DoTwo Compress.app" "DoTwo_Compress_Beta_X.Y.Z_Legacy_10.13_Intel.zip"
-```
-
-## Temporales
-
-La app no escribe temporales dentro de la `.app`. Usa:
-
-```text
-~/Library/Application Support/dotwo-compress/staging
-```
-
-La beta `0.1.6` limpia esa carpeta:
-
-- al abrir la app;
-- al cerrar la app;
-- al iniciar nueva sesion;
-- al limpiar cola.
-
-Si el equipo se apaga o la app se mata de forma forzada, la limpieza se hara al siguiente arranque.
-
-## Documentacion principal
-
-Leer en este orden:
-
-1. `README.md`
-2. `docs/RETOMAR_PROYECTO.md`
-3. `docs/PROJECT_STATUS.md`
-4. `docs/INFORME_TECNICO_APP.md`
-5. `docs/BUILD_MATRIX.md`
-6. `docs/BINARY_DEPENDENCIES.md`
-7. `docs/HOJA_DE_RUTA.md`
-
-## Git y traslado
-
-El repositorio tiene `.gitignore` preparado para no versionar:
-
-- `node_modules/`
-- `dist-*`
-- `.DS_Store`
-- logs y temporales
-
-`vendor/ffmpeg/` si debe conservarse porque forma parte de la app autocontenida.
-
-Los ZIPs de `RELEASE_BETA_0_1_6/` pueden guardarse como artefactos de release. Para un repositorio Git limpio, lo recomendable es versionar codigo, docs, assets, scripts, config, `package-lock.json` y `vendor/ffmpeg`; y publicar los ZIPs como release externa o backup.
-
-## Estado de firma
-
-La build actual no esta firmada ni notarizada:
-
-```json
-"identity": null
-```
-
-En campo no ha pedido permisos manuales, pero la firma/notarizacion sigue siendo una tarea pendiente antes de una distribucion amplia de laboratorio.
+Codigo, docs, assets y lockfile se versionan. FFmpeg/FFprobe se preparan
+localmente; no se incluyen en Git publico. Builds, PDF generado, dependencias,
+logs, .DS_Store y credenciales quedan fuera.
+El encargo actual solo prepara commits locales y entrega NAS. No hacer push,
+tags ni releases: la sync la solicitara el usuario a OpenClaw.

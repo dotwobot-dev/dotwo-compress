@@ -8,15 +8,14 @@ Near-term priorities:
 - Keep K2/XDCAM and H.264 conversion reliable for lab workflows.
 - Keep FFmpeg/FFprobe outside public Git history and fetch them with verified
   hashes.
-- Improve public packaging notes and unsigned beta distribution.
-- Prepare signed and notarized macOS builds when Apple Developer ID is ready.
+- Validate signed 0.1.8 DMG installation on actual lab Macs and Grass Valley.
+- Maintain resumable signing/notarization and the editable two-page Spanish guide.
 
 Distribution roadmap:
 
-- Unsigned ZIP beta builds.
-- Signed app bundle.
-- Apple notarization.
-- Signed ZIP, DMG, or PKG release.
+- 0.1.8: signed apps, Apple notarization and stapled DMGs completed locally/NAS.
+- Modern ARM64/x64 require macOS 12; frozen x64 legacy retains macOS 10.13.
+- Managed PKG remains a separate future option. No GitHub publication in this task.
 
 Architecture note:
 

@@ -1,0 +1,30 @@
+{
+  "version": "0.1.8",
+  "date": "6 de octubre de 2026",
+  "page1": {
+    "subtitle": "Instalar, cargar y revisar antes de convertir",
+    "left": [
+      {"title": "01  Instala la variante correcta", "text": "Apple Silicon e Intel moderno requieren <b>macOS 12 o posterior</b>. Para Intel con High Sierra, elige <b>legacy (macOS 10.13+)</b>. Abre el DMG, arrastra la app a Aplicaciones, espera la copia, expulsa el disco y abre DoTwo Compress desde Aplicaciones."},
+      {"title": "02  Añade tus vídeos", "text": "Pulsa <b>Añadir archivo</b> y selecciona uno o varios MOV, MP4, M4V, MKV, AVI o MXF. La app copia cada original a almacenamiento local, lo comprueba y genera un proxy. Espera a <b>Listo para procesar</b>; el original no se modifica."},
+      {"title": "03  Lee el inspector", "text": "Muestra peso, contenedor, códec, resolución, FPS, bitrate y audio. Verde: correcto; ámbar: revisar; rojo: problema. Los avisos señalan resolución distinta, vídeo vertical, FPS, audio ausente o fuentes pesadas. La app normaliza al exportar; revisa la imagen y el sonido."}
+    ],
+    "right": [
+      {"title": "04  Revisa el proxy", "text": "Usa los controles del reproductor para reproducir, pausar, moverte por el vídeo, ajustar el volumen o verlo a pantalla completa. El proxy es una copia ligera para revisar; <b>la conversión usa el original copiado</b>, no el proxy."},
+      {"title": "05  Marca IN y OUT", "text": "Sitúa el reproductor al inicio deseado y pulsa <b>Marcar IN</b>; ve al final deseado y pulsa <b>Marcar OUT</b>. La selección muestra ambos tiempos y la duración. Sin marcas se usa todo; solo IN llega hasta el final y solo OUT empieza al inicio. <b>Limpiar</b> restablece el recorte del clip."},
+      {"title": "06  Comprueba los avisos", "text": "Los vídeos verticales se centran sobre un fondo ampliado y desenfocado. Una fuente sin audio recibe silencio estéreo. Los perfiles adaptan el tamaño a 1920 × 1080. Ante un problema, abre <b>Ver log</b> y entrega el registro al técnico con la versión y el archivo utilizado."}
+    ]
+  },
+  "page2": {
+    "subtitle": "Ordenar la cola, elegir salida y guardar el resultado",
+    "left": [
+      {"title": "07  Organiza la cola", "text": "Selecciona un clip para revisar su proxy y cambiar sus IN/OUT. <b>Subir</b> y <b>Bajar</b> cambian el orden; <b>Quitar</b> retira ese clip. Cada uno conserva sus marcas. Varios clips producen un único montaje en el orden mostrado. Durante las operaciones, la cola se bloquea."},
+      {"title": "08  Elige el perfil", "text": "<b>Procesar K2</b>: MOV XDCAM EX 1080i50, MPEG-2, PCM estéreo 48 kHz y timecode; destinado al Grass Valley K2. <b>Procesar H.264</b>: MOV 1080p, H.264 y AAC estéreo 48 kHz; normalización más ligera, con objetivo de vídeo limitado a 8 Mb/s. No sustituye al perfil K2."},
+      {"title": "09  Espera el procesado", "text": "Los botones se habilitan cuando todos los clips están listos. La barra indica la fase y el avance. Después se valida el perfil técnico; <b>Procesado</b> indica que la salida está preparada. La aceptación final por Grass Valley debe comprobarse en el servidor de destino."}
+    ],
+    "right": [
+      {"title": "10  Guarda fuera de la app", "text": "Pulsa <b>Guardar K2</b> o <b>Guardar H.264</b> y elige destino. Por defecto se propone un nombre ASCII en mayúsculas junto al primer original, con sufijo VALIDADO, H264 o MONTAJE. Tras guardar, <b>Mostrar archivo</b> lo localiza en Finder. Procesar no equivale a haberlo guardado."},
+      {"title": "11  Límites y espacio", "text": "Límite inicial: <b>25 GiB por archivo y 60 GiB por cola</b>. Antes de copiar o guardar se comprueba que queden 5 GiB libres. El original, proxy, segmentos y salida pueden ocupar bastante más: deja margen adicional para convertir. Si aparece Error, revisa el registro y consulta al técnico."},
+      {"title": "12  Termina la sesión", "text": "<b>Limpiar cola</b> retira todos los clips y sus temporales. Al salir de la app también se limpian los temporales; <b>guarda antes el resultado</b>. Los originales y exportaciones ya guardadas se conservan. La app utiliza el procesamiento del Mac y no sube tus vídeos a un servidor."}
+    ]
+  }
+}

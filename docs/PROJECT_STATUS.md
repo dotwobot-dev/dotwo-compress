@@ -1,12 +1,30 @@
 # Estado del proyecto DoTwo Compress
 
-Fecha: 2026-06-02
+Fecha: 2026-10-06
 
 Nombre de producto: **DoTwo Compress**.
 
 La app mantiene el perfil tecnico K2/XDCAM como salida broadcast principal y añade H.264 como salida de normalizacion. La identidad visual sigue la linea de DoTwo Teleprompter, con icono D2C, gorra azul y barra verde.
 
-## Beta operativa 0.1.7
+## Entrega firmada 0.1.8
+
+Apps y DMG de las tres variantes firmados con Developer ID de Domingo Moreno,
+Team `MR7VK26RP8`, aceptados por Apple, con tickets adjuntos y Gatekeeper correcto.
+Modernas: Electron 43.7.7/macOS 12+. Legacy: Electron 26.6.10/macOS 10.13.0+.
+FFmpeg/FFprobe se incluyen y firman por arquitectura; originales vendor intactos.
+
+Prueba funcional Apple Silicon completa con perfil separado y videos sinteticos:
+carga/copia, inspector, proxy/player, IN/OUT, cola, K2/H.264, guardado, log y
+limpieza. Limites de archivo, cola y espacio insuficiente comprobados.
+Intel no ejecutable en este host sin Rosetta: pruebas Intel/High Sierra y Grass
+Valley pendientes en laboratorio. No se han tocado instalaciones de trabajo.
+
+Manual A4 de dos paginas con capturas reales y fuentes en `docs/manual/`.
+Entrega: `/Volumes/BackUP_MacMini/DoTwo_Compress/release_archive/DoTwo_Compress_0.1.8_signed_20261006/`.
+Ver `docs/MANIFIESTO_0_1_8_FIRMADO.md` y `docs/DISTRIBUCION_MACOS.md`.
+GitHub queda sin publicar; cambios preparados en commit local.
+
+## Historico beta 0.1.7
 
 Estado: beta tecnica en preparacion para empaquetado. Mantiene la base validada de `0.1.6` y añade protecciones de tamano/espacio, bloqueo de cola durante operaciones, favicon, captura en README y endurecimiento del servidor prototipo.
 
@@ -77,7 +95,7 @@ RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Intel_moderno.zip
 RELEASE_BETA_0_1_6/DoTwo_Compress_Beta_0.1.6_Legacy_10.13_Intel.zip
 ```
 
-Decision provisional de distribucion: las betas de campo se mantienen como ZIP sin firmar hasta recibir respuesta del servicio de informatica de la Universidad de Malaga sobre cuenta Apple Developer institucional, Developer ID y posible exencion educativa. El objetivo de instalacion para laboratorios sigue siendo PKG firmado y notarizado cuando el flujo institucional este resuelto.
+Decision historica de junio: betas ZIP sin firmar mientras se consultaba la via institucional. En octubre se utiliza la cuenta personal activa de Domingo Moreno para app y DMG. PKG queda como opcion futura, fuera del entregable actual.
 
 ## Resultado de pruebas
 
@@ -215,7 +233,7 @@ docs/MANIFIESTO_BETA_0_1_6.md
 - Seguir probando en campo la ingesta K2 con lotes y formatos variados.
 - Medir tiempos de copia local, proxy y procesado en equipos de laboratorio.
 - Validar Apple Silicon, Intel moderna e Intel legacy con usuarios reales.
-- Esperar respuesta de informatica UMA sobre Apple Developer Program institucional.
-- Mejorar instalacion para laboratorios: firma/notarizacion, DMG/PKG y diagnostico inicial.
+- Probar instalacion y ejecucion de 0.1.8 en Intel moderno y High Sierra.
+- Valorar PKG para despliegue gestionado como trabajo separado.
 - Mantener `server.mjs` aparcado como prototipo para futura conversion centralizada si hay infraestructura UMA.
 - Ajustar limites de tamano tras medir archivos reales de estudiantes en laboratorio.
